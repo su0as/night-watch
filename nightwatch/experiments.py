@@ -26,6 +26,7 @@ DEFAULT_MATRIX: list[tuple[str, str, int]] = [
 SMOKE_MATRIX: list[tuple[str, str, int]] = [
     ("smoke-healthy", "none", 1),
     ("smoke-flip", "flip_bug", 1),
+    ("smoke-lr", "lr_blowup@20000", 2),
     ("smoke-crash", "crash@30000", 1),
 ]
 

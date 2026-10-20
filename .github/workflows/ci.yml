@@ -1,0 +1,91 @@
+name: ci
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: tests (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pytest requests psutil temporalio
+      - name: unit tests + an 8-hour Temporal night (time-skipping)
+        run: python -m pytest -q -rs
+
+  smoke-linux:
+    name: real training smoke (linux, rendered)
+    runs-on: ubuntu-latest
+    env:
+      MUJOCO_GL: osmesa
+      PYOPENGL_PLATFORM: osmesa
+      NW_TABPFN_BACKEND: sklearn   # TabPFN needs a licence login; the code path is the same
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y libosmesa6 libosmesa6-dev libgl1
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -e ".[train,temporal,plots]" scikit-learn PyOpenGL pytest
+      - run: python -m nightwatch doctor || true
+      - name: 4 tiny runs (healthy, flip bug, LR blow-up, crash)
+        run: python -m nightwatch runs --smoke --steps 40000 --jobs 4
+      - run: tail -n 5 runs/smoke/*.log
+      - run: python -m nightwatch fit --runs runs/smoke --out models/smoke.csv
+      - run: python -m nightwatch eval --runs runs/smoke --profiles thresholds tabpfn --out docs/EVAL_smoke.md
+      - run: NW_TABPFN_TRAIN_TABLE=models/smoke.csv python -m nightwatch report runs/smoke/smoke-flip --profile thresholds
+      - name: summary
+        run: |
+          cat docs/EVAL_smoke.md >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          for r in runs/smoke/*/; do echo "== $r"; ls "$r"; wc -l "$r/metrics.jsonl" "$r/frames.jsonl"; tail -n 2 "$r/labels/truth.jsonl"; done >> "$GITHUB_STEP_SUMMARY"
+          ls -la runs/smoke/smoke-flip/frames runs/smoke/smoke-flip/report >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-linux
+          path: |
+            docs/EVAL_smoke.md
+            docs/EVAL_smoke.json
+            runs/smoke/*/frames/*_sheet.png
+            runs/smoke/*/report/**
+            runs/smoke/*.log
+            runs/smoke/*/manifest.json
+            runs/smoke/*/labels/**
+
+  smoke-windows:
+    name: real training smoke (windows, no GPU)
+    runs-on: windows-latest
+    env:
+      NW_TABPFN_BACKEND: sklearn
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -e ".[train,temporal,plots]" scikit-learn
+      - run: python -m nightwatch doctor
+        continue-on-error: true
+      - run: python -m nightwatch runs --smoke --steps 40000 --jobs 4
+      - run: Get-Content runs\smoke\*.log -Tail 5
+      - run: python -m nightwatch fit --runs runs\smoke --out models\smoke.csv
+      - run: python -m nightwatch eval --runs runs\smoke --profiles thresholds tabpfn --out docs\EVAL_smoke.md
+      - run: Get-Content docs\EVAL_smoke.md >> $env:GITHUB_STEP_SUMMARY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-windows
+          path: |
+            docs/EVAL_smoke.md
+            runs/smoke/*.log
