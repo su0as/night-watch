@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+.env
+.pytest_cache/
+
+# training runs and generated artefacts are large; keep only what the post needs
+runs/
+models/*.csv
+models/*.tabpfn_fit
+nightwatch.db
+*.log
