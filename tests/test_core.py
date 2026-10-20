@@ -128,6 +128,18 @@ def test_thresholds_catch_lr_blowup_but_not_flip(tmp_path):
     assert fired == []  # the blind spot: reward goes up, nothing trips
 
 
+def test_thresholds_quiet_on_noisy_negative_early_rewards():
+    from nightwatch.detectors.base import Observation
+
+    rews = [-300, -280, -260, -200, -150, -120, -100, -140, -110, -130, -105, -125, -115]
+    rows = [{"t": float(i), "step": i * 2048, "rollout/ep_rew_mean": r, "train/approx_kl": 0.01}
+            for i, r in enumerate(rews)]
+    obs = Observation("r", "r", 99.0, False, {"status": "running"}, rows, [], None, None)
+    assert Thresholds().check(obs) == []  # old "30% below best" rule would have fired at -140
+    rows.append({"t": 99.0, "step": 99 * 2048, "rollout/ep_rew_mean": -280.0, "train/approx_kl": 0.01})
+    assert [s.kind for s in Thresholds().check(obs)] == ["reward_drop"]
+
+
 # ------------------------------------------------------------------ policy
 
 def _sig(kind, level="wake", score=1.0):

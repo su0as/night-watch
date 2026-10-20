@@ -24,8 +24,11 @@ PROMPT_VERSION = "v1"
 
 POSTURES = ["upright", "upside_down", "on_its_side", "mid_flip", "broken", "unclear"]
 MOTIONS = ["moving_forward", "moving_backward", "spinning", "stuck", "jittering", "unclear"]
-WRONG_POSTURES = {"upside_down", "on_its_side", "broken"}
+# Wake-worthy. Matches the ground-truth definition (tilt > 120 degrees = flipped).
+WRONG_POSTURES = {"upside_down", "broken"}
 WRONG_MOTIONS = {"spinning"}
+# Worth a morning note only: a running cheetah pitches a lot, so "on its side" is ambiguous.
+ODD_POSTURES = {"on_its_side"}
 
 SCHEMA = {
     "type": "object",
@@ -96,6 +99,10 @@ class Verdict:
     @property
     def wrong(self) -> bool:
         return self.ok and self.robot_visible and (self.posture in WRONG_POSTURES or self.motion in WRONG_MOTIONS)
+
+    @property
+    def odd(self) -> bool:
+        return self.ok and self.robot_visible and self.posture in ODD_POSTURES
 
     @classmethod
     def from_dict(cls, d: dict) -> "Verdict":
@@ -180,6 +187,9 @@ class VisionDetector:
         if last.wrong:
             return [Signal("vision", "robot_looks_wrong", "note", 0.5,
                            f"The robot looked wrong in the latest test run: {desc}", step, obs.now, ev)]
+        if last.odd:
+            return [Signal("vision", "robot_looks_odd", "note", 0.3,
+                           f"The robot looked odd in the latest test run: {desc}", step, obs.now, ev)]
         if not last.robot_visible:
             return [Signal("vision", "robot_out_of_view", "note", 0.3,
                            "The robot is not visible in the latest test run.", step, obs.now, ev)]

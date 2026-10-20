@@ -43,11 +43,16 @@ class Thresholds:
 
         rews = [v for v in (_num(r, KEYS["rew"]) for r in rows) if v is not None]
         if len(rews) > self.warmup_rows:
+            # "Lost 30% of the progress made so far". A plain "30% below best" misfires while
+            # rewards are still negative early in training, and nobody would keep that alert.
+            start = sum(rews[:3]) / 3
             best, now_r = max(rews), rews[-1]
-            scale = max(abs(best), 1.0)
-            if best - now_r > self.drop_frac * scale:
-                out.append(Signal("thresholds", "reward_drop", "wake", (best - now_r) / scale,
-                                  f"Reward fell from {best:.0f} to {now_r:.0f}.", step, obs.now))
+            gained = best - start
+            meaningful = gained > 0.1 * max(abs(best), abs(start), 1.0)
+            if meaningful and best - now_r > self.drop_frac * gained:
+                out.append(Signal("thresholds", "reward_drop", "wake", (best - now_r) / gained,
+                                  f"Reward fell from {best:.0f} to {now_r:.0f} "
+                                  f"(lost {100 * (best - now_r) / gained:.0f}% of the gains).", step, obs.now))
 
         kl = _num(last, KEYS["kl"])
         if kl is not None and kl > self.kl_max:
