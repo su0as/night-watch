@@ -227,3 +227,20 @@ def test_settings_vision_think_default(monkeypatch):
     assert s.vision_think is False and s.vision_snapshots == 2 and s.vision_max_side == 1024
     monkeypatch.setenv("NW_VISION_THINK", "1")
     assert Settings.from_env(dotenv=None).vision_think is True
+
+
+def test_rules_never_wait_for_a_model(tmp_path, monkeypatch):
+    """A model that cannot load (no table, out of memory...) must not stop the plain rules."""
+    from nightwatch.config import Settings
+    from nightwatch.runtime import WatchContext
+
+    run = make_run(tmp_path, "crash", "crash")
+    s = Settings.from_env(dotenv=None)
+    s.tabpfn_train_table = str(tmp_path / "missing.csv")
+    ctx = WatchContext(s, "nightwatch")
+    assert [d.name for d in ctx.detectors_named("rules")] == ["rules"]  # builds rules only
+    assert "tabpfn" not in ctx._built and "vision" not in ctx._built
+    signals, status, _ = ctx.check(str(run), now=T0 + 30 * DT + 3600)
+    kinds = {sig.kind for sig in signals}
+    assert "tabpfn_failed" in kinds                # noted for the morning, not fatal
+    assert kinds & {"stalled", "dead"}             # the rules still caught the silent run

@@ -5,7 +5,7 @@
 **Sleep while your robot learns.** Two open models watch an overnight reinforcement-learning run, and you only get woken when it is worth it.
 
 - **TabPFN** reads the training metrics and compares them with past runs that broke.
-- **Gemma 4**, running locally through Ollama, looks at the robot.
+- **Gemma 4**, running locally through Ollama, looks through a camera bolted to the robot's head.
 - A few plain rules catch NaNs, stalls and crashes.
 - A **Temporal** workflow keeps the watch going even if the watcher process dies at 3 a.m.
 
@@ -38,13 +38,29 @@ Training a robot policy in simulation takes hours, so you start it before bed. T
 
 You only see that second kind by looking at the robot. Night Watch looks for you.
 
+### Gemma could not see it from the side, so the robot got a head camera
+
+The first version showed Gemma 4 E4B the usual side view. A controlled test (`python -m nightwatch eyetest`: drop the robot into a known pose, let the physics settle it, ask the same judge that runs at night) showed it called **every** robot "upright", including the ones lying on their backs. Bigger pictures, other wordings, a reference picture and thinking mode did not fix it. A camera fixed to the robot's body did: when the robot flips, its camera flips too, and "where are the floor and the sky in this picture?" is a question Gemma gets right. On its back, the sky is at the bottom of the picture, which never happens the right way up.
+
+![side camera vs head camera, and what Gemma said](docs/assets/eyetest_side_vs_head.png)
+
+| what Gemma is shown | right calls | upside-down robots caught | seconds per test episode (laptop iGPU) |
+|---|---|---|---|
+| side camera, 2x2 sheet of 320x240 snapshots (first version) | 6 / 12 | 0 / 6 | 10 |
+| side camera, full-size 1024x768 snapshots | 6 / 12 | 0 / 6 | 19 |
+| **head camera, 4 snapshots at 512x384** | **12 / 12** | **6 / 6** | 19 |
+
+Full table: [docs/EYETEST.md](docs/EYETEST.md).
+
 ## How it works
 
 ```
 trainer (PPO + MuJoCo)                         watcher (every 5 min, Temporal workflow)
   every PPO update  -> metrics.jsonl  ------->  rules     NaN? log silent? process dead?
-  every 20k steps   -> 4 snapshots   ------->  TabPFN    do these metrics look like past runs that broke?
-                       of a test run  ------->  Gemma 4   reference pose vs latest snapshots: upright? flipped? spinning?
+  every 20k steps   -> a test episode ------->  TabPFN    do these metrics look like past runs that broke?
+                       4 side snapshots          (for you: reports, alerts)
+                       4 head-camera     ----->  Gemma 4   where are floor and sky? code: upright / upside down / spinning
+                       snapshots
   heartbeat.json    -> alive?                   policy    wake (max 3 a night, snooze per kind) or note for the morning
   labels/  (hidden) -> ground truth             report    time-lapse GIF, reward chart, summary (numbers checked)
 ```
@@ -52,8 +68,8 @@ trainer (PPO + MuJoCo)                         watcher (every 5 min, Temporal wo
 A few design choices that matter:
 
 - **The watcher never sees the answers.** The trainer writes the injected fault and the true body orientation from the simulator into `labels/`. No watcher reads that folder; only the evaluation does. So when the evaluation says "Gemma spotted the flip", it is checked against physics, not against Gemma.
-- **Gemma compares against the robot's own first picture.** The first test episode of every run (an untrained robot, standing the right way up) is the reference image. That way there is no per-robot code for "what upright looks like".
-- **Only fixed fields decide a wake-up.** Gemma answers in a JSON schema (`posture`, `motion`). Only those enum fields trigger a wake. Its free-text "why" goes in the message, never in the decision.
+- **Gemma answers a question it can actually answer.** For each head-camera snapshot it says where the floor and the sky are (top half, bottom half, whole picture, a side, not visible), in a JSON schema. Plain code turns the answers into a posture and motion (`cameras.snapshot_vote`, `posture_from_votes`): upside down only when the sky is below. The head camera exists only in a render-only copy of the model (MuJoCo `MjSpec`), sits in the middle of the torso and draws only the world, not the robot, so it works like an artificial horizon. The physics the policy learns on is untouched.
+- **Only fixed fields decide a wake-up.** Gemma's answers are enums; nothing it writes in free text can wake you.
 - **TabPFN gets a table, not a training loop.** Every log window from past runs becomes one row, labelled by whether the run was already broken at that point. TabPFN learns in context, so there is no training run to babysit (which would be ironic).
 - **Numbers in the morning summary come from code.** Gemma may phrase them. If its paragraph contains a number that is not in the facts, it is thrown away and a template is used. The report says which one you got.
 - **Durable by default.** The watch is a Temporal workflow. Kill the worker mid-night, restart it, and the watch carries on from its last check, including how many times it has already woken you.
@@ -63,9 +79,10 @@ A few design choices that matter:
 ```bash
 python -m venv .venv && . .venv/bin/activate      # Windows: .venv\Scripts\Activate.ps1
 pip install -e ".[all]"
-ollama pull gemma4:e4b
-cp .env.example .env                              # set NW_NTFY_TOPIC for phone alerts
-python -m nightwatch doctor                       # checks every moving part
+ollama pull gemma4:e4b-it-qat                     # 6.1 GB
+cp .env.example .env                              # NW_NTFY_TOPIC for phone alerts, TABPFN_TOKEN for TabPFN
+python -m nightwatch doctor                       # checks every moving part, incl. RAM, sleep settings, licence
+python -m nightwatch eyetest                      # can Gemma see which way up the robot is? (~5 min)
 ```
 
 Record a few runs, teach TabPFN what broken looks like, and let Gemma look at every test episode:
@@ -93,14 +110,14 @@ Full step-by-step guide, including the kill test: [docs/TESTING_WINDOWS.md](docs
 
 ## Results
 
-See [docs/EVAL.md](docs/EVAL.md), generated by `python -m nightwatch eval`. It compares four watchers on the same recorded runs:
+Gemma's eyesight: [docs/EYETEST.md](docs/EYETEST.md) (above). Watchers end to end: [docs/EVAL.md](docs/EVAL.md), generated by `python -m nightwatch eval`. It compares four watchers on the same recorded runs:
 
 | watcher | what it uses |
 |---|---|
 | thresholds | plain rules + the alert thresholds people usually set (reward drop, KL spike, value-loss spike) |
 | tabpfn | plain rules + TabPFN on training metrics (leave-one-run-out) |
 | vision | plain rules + Gemma looking at the robot |
-| nightwatch | all of the above |
+| nightwatch | all of the above (the cheap threshold alerts stay on) |
 
 ## Fault injection
 
@@ -117,14 +134,17 @@ See [docs/EVAL.md](docs/EVAL.md), generated by `python -m nightwatch eval`. It c
 
 - The logs and videos of an unpublished research policy stay on your machine.
 - Many lab and cluster compute nodes have no outbound internet.
-- A look every 5 minutes is about 100 vision calls a night, every night. Locally that costs nothing.
-- You can read TabPFN's source and swap Gemma sizes (`gemma4:e2b` on a CPU laptop, `gemma4:12b` on a GPU) with one setting.
+- A look every 5 minutes is about 400 small vision calls a night, every night. Locally that costs nothing.
+- You can open the box when it fails. Gemma's blindness to the side view showed up in a controlled test, and the fix (a head camera) only works because I control the renderer and the model.
+- You can read TabPFN's source: that is how I found `fit_with_cache`, which took a live check from ~96 s to under 1 s on a laptop CPU.
 
 ## Layout
 
 ```
 nightwatch/
   train.py            PPO + MuJoCo trainer with telemetry, test-episode snapshots, fault injection
+  cameras.py          side + head camera from one render-only MjSpec copy of the robot
+  keepawake.py        asks Windows/macOS not to sleep while a run or a watch is going
   truth.py            ground-truth body posture from the simulator (labels only)
   features.py         training-log window -> TabPFN features (pure Python)
   detectors/          rules, thresholds, tabpfn_detector, vision (Gemma via Ollama)
@@ -132,7 +152,7 @@ nightwatch/
   temporal_app/       workflow, activities, worker
   watch.py            the same watch as a plain loop
   report.py           morning report, time-lapse, number-checked summary
-  evaluation/         ground truth, replay, scoring, EVAL.md
+  evaluation/         ground truth, replay, scoring, EVAL.md, eyetest (EYETEST.md)
 tests/                pure-Python tests over synthetic runs + a time-skipping Temporal test of an 8-hour night
 ```
 

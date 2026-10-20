@@ -19,7 +19,9 @@ from statistics import median
 
 from ..runlog import append_jsonl, read_jsonl, write_json_atomic
 
-CLASSES = {"upright": 0.0, "upside_down": 3.14159, "on_its_side": 1.5708}
+CLASSES = {"upright": 0.0, "upside_down": 3.14159, "on_its_side": 1.5708, "crouch": 0.9}
+# crouch: nose down (or rearing up) but still the right way up. A healthy smoke run learned this,
+# and the first head-camera mount (on the nose) went through the floor and called it upside down.
 
 
 def truth_class(tilt_deg: float) -> str:
@@ -53,7 +55,8 @@ def make_sheets(out_dir: str | Path, env_id: str = "HalfCheetah-v5", per_class: 
     from ..truth import env_family
 
     if classes is None:
-        classes = ("upright", "upside_down") if env_family(env_id) == "planar" else tuple(CLASSES)
+        classes = (("upright", "upside_down", "crouch") if env_family(env_id) == "planar"
+                   else ("upright", "upside_down", "on_its_side"))
     import gymnasium as gym
     import numpy as np
     from PIL import Image
@@ -98,12 +101,19 @@ def make_sheets(out_dir: str | Path, env_id: str = "HalfCheetah-v5", per_class: 
             qvel = np.zeros_like(u.init_qvel)
             qpos[2] = pitch + rng.uniform(-0.25, 0.25)
             qpos[3:] = rng.uniform(-0.5, 0.5, size=qpos[3:].shape)
-            if cls != "upright":
+            if cls == "crouch":
+                qpos[2] = (1 if k % 2 == 0 else -1) * rng.uniform(0.75, 0.95)  # nose down, or rearing up
+                qpos[1] = -0.1
+            elif cls != "upright":
                 qpos[1] = -0.3 if cls == "upside_down" else -0.2
             u.set_state(qpos, qvel)
-            for _ in range(100):  # let it fall and settle
+            # let it fall and settle; a crouch is caught mid-motion, before it settles back
+            for _ in range(3 if cls == "crouch" else 100):
                 env.step(rng.uniform(-0.3, 0.3, size=env.action_space.shape))
-            frames, heads = snap(rng)
+            if cls == "crouch":
+                frames, heads = snap(rng, steps_between=1)
+            else:
+                frames, heads = snap(rng)
             pose = pose_from_state(env_id, u.data.qpos, u.data.qvel)
             rel = f"frames/{cls}_{k}_sheet.png"
             contact_sheet(frames).save(out / rel)
@@ -146,11 +156,13 @@ def run_eyetest(root: str | Path, settings, modes: list[str], env_id: str = "Hal
     out = root / config_name(size, mirror)
     meta = out / "sheets.json"
     old = json.loads(meta.read_text(encoding="utf-8")) if meta.is_file() else {}
-    if old.get("env_id") == env_id and len(old.get("sheets", [])) >= per_class * 2:
+    want = 3  # upright, upside_down, crouch (planar) / on_its_side (3-D robots)
+    have = {s.get("intended") for s in old.get("sheets", [])}
+    if old.get("env_id") == env_id and len(have) >= want and len(old.get("sheets", [])) >= per_class * want:
         sheets = [Sheet(**s) for s in old["sheets"]]
     else:
         sheets = make_sheets(out, env_id, per_class=per_class, mirror=mirror, width=size[0], height=size[1])
-    client = OllamaClient(settings.ollama_url)
+    client = OllamaClient(settings.ollama_url, keep_alive=settings.ollama_keep_alive)
     results: dict[str, dict] = {}
     log = root / "eyetest.jsonl"
     for mode in modes:
@@ -173,6 +185,8 @@ def run_eyetest(root: str | Path, settings, modes: list[str], env_id: str = "Hal
             # Right wake decision: wake for upside down, stay quiet otherwise.
             correct = v.ok and (v.wrong == (s.truth == "upside_down"))
             row = {"mode": mode, "config": config_name(size, mirror), "shown": shown, "sheet": s.sheet,
+                   "frame": "512x384" if head else (f"{size[0]}x{size[1]}, as 2x2 sheet" if sheet_only
+                                                     else f"{size[0]}x{size[1]}"),
                    "truth": s.truth, "tilt_deg": s.tilt_deg, "posture": v.posture, "motion": v.motion,
                    "feet": v.feet, "wake_worthy": v.wrong, "correct_wake": correct,
                    "exact": v.ok and v.posture == s.truth, "latency_s": v.latency_s,
@@ -235,16 +249,18 @@ def write_markdown(path: str | Path, log_rows: list[dict], env_id: str) -> None:
          "with small random motor twitches, and four snapshots are taken, exactly like a test episode during "
          "training. The truth is the torso angle from the simulator (upright < 60 degrees, upside down > 120). "
          "The judge is the same code that watches at night; only what it is shown changes.", "",
-         "| model | snapshots | floor | Gemma is shown | mode | right wake decision | upright left alone "
-         "| upside down caught | image+prompt tokens | seconds per look |",
-         "|---|---|---|---|---|---|---|---|---|---|"]
+         "| model | camera | frame size | floor | right wake decision | upright left alone "
+         "| upside down caught | image+prompt tokens per test episode | seconds per test episode |",
+         "|---|---|---|---|---|---|---|---|---|"]
     for (model, config, shown, version, mode), rows in sorted(latest.items(), key=lambda kv: (kv[0][1], kv[0][2], kv[0][4])):
         s = summarise_mode(rows)
         pt = s["per_truth"]
         up = pt.get("upright", {"n": 0, "wake_correct": 0})
         dn = pt.get("upside_down", {"n": 0, "wake_correct": 0})
         size, _, floor = config.partition("-")
-        L.append(f"| `{model}` | {size} | {'mirror' if floor == 'mirror' else 'matte'} | {shown} | {mode} "
+        frame = rows[-1].get("frame", size)
+        cam = shown + (", thinks first" if mode == "side-think" else "")
+        L.append(f"| `{model}` | {cam} | {frame} | {'mirror' if floor == 'mirror' else 'matte'} "
                  f"| **{s['wake_decision_correct']} / {s['answered']}** | {up['wake_correct']} / {up['n']} "
                  f"| {dn['wake_correct']} / {dn['n']} | {s['median_in_tokens']} | {s['median_latency_s']} |")
     L += ["", "What Gemma called each pose:", ""]

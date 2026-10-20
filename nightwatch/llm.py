@@ -50,10 +50,15 @@ def image_b64(path: str | Path, max_side: int = 1024) -> str:
 
 
 class OllamaClient:
-    def __init__(self, url: str = "http://localhost:11434", timeout_s: float = 600.0, retries: int = 3):
+    def __init__(self, url: str = "http://localhost:11434", timeout_s: float = 600.0, retries: int = 3,
+                 keep_alive: str = ""):
+        """keep_alive: how long Ollama keeps the model in memory after a call ("20s", "5m", "0").
+        On a 16 GB laptop, unloading Gemma between 5-minute checks is what leaves room for
+        TabPFN and the training run. Empty = Ollama's default."""
         self.url = url.rstrip("/")
         self.timeout_s = timeout_s
         self.retries = retries
+        self.keep_alive = keep_alive
 
     def chat(self, model: str, prompt: str, images_b64: list[str] | None = None,
              schema: dict | None = None, temperature: float = 0.0, num_ctx: int = 8192,
@@ -75,6 +80,8 @@ class OllamaClient:
         }
         if schema is not None:
             payload["format"] = schema
+        if self.keep_alive:
+            payload["keep_alive"] = self.keep_alive
 
         last_exc: Exception | None = None
         for attempt in range(self.retries):
@@ -108,6 +115,15 @@ class OllamaClient:
                 span.set_data("nightwatch.latency_s", round(res.latency_s, 3))
                 return res
         raise last_exc or OllamaError("Ollama call failed")
+
+    def unload(self, model: str) -> bool:
+        """Ask Ollama to drop a model from memory now (best effort). On a 16 GB laptop Gemma's ~6 GB
+        is the difference between TabPFN loading and Windows error 1455 / an access violation."""
+        try:
+            r = requests.post(f"{self.url}/api/generate", json={"model": model, "keep_alive": 0}, timeout=30)
+            return r.status_code == 200
+        except requests.RequestException:
+            return False
 
     def chat_json(self, model: str, prompt: str, schema: dict, images_b64: list[str] | None = None,
                   purpose: str = "", think: bool = False, max_tokens: int | None = None

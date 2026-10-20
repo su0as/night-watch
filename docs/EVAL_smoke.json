@@ -1,0 +1,521 @@
+{
+  "summary": [
+    {
+      "profile": "thresholds",
+      "failures": 3,
+      "caught": 2,
+      "median_minutes": 6.0,
+      "false_wakes": 0,
+      "clean_runs": 1,
+      "false_wakes_clean": 0,
+      "hours": 0.11,
+      "false_per_8h": 0.0
+    },
+    {
+      "profile": "tabpfn",
+      "failures": 3,
+      "caught": 1,
+      "median_minutes": 12.0,
+      "false_wakes": 1,
+      "clean_runs": 1,
+      "false_wakes_clean": 1,
+      "hours": 0.11,
+      "false_per_8h": 72.73
+    },
+    {
+      "profile": "vision",
+      "failures": 3,
+      "caught": 2,
+      "median_minutes": 6.2,
+      "false_wakes": 0,
+      "clean_runs": 1,
+      "false_wakes_clean": 0,
+      "hours": 0.11,
+      "false_per_8h": 0.0
+    },
+    {
+      "profile": "nightwatch",
+      "failures": 3,
+      "caught": 3,
+      "median_minutes": 0.3,
+      "false_wakes": 1,
+      "clean_runs": 1,
+      "false_wakes_clean": 1,
+      "hours": 0.11,
+      "false_per_8h": 72.73
+    }
+  ],
+  "scores": [
+    {
+      "run_id": "smoke-crash",
+      "profile": "thresholds",
+      "failure_kind": "crash",
+      "caught": true,
+      "minutes_to_wake": 12.0,
+      "steps_to_wake": -1328,
+      "first_wake_source": "rules/stalled",
+      "false_wakes": 0,
+      "hours": 0.01058579299185011,
+      "wake_kinds": [
+        "rules/stalled"
+      ]
+    },
+    {
+      "run_id": "smoke-flip",
+      "profile": "thresholds",
+      "failure_kind": "flipped",
+      "caught": false,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.0334436082177692,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "smoke-healthy",
+      "profile": "thresholds",
+      "failure_kind": "none",
+      "caught": null,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.03285373727480571,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "smoke-lr",
+      "profile": "thresholds",
+      "failure_kind": "lr_blowup",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 2528,
+      "first_wake_source": "thresholds/kl_spike",
+      "false_wakes": 0,
+      "hours": 0.03290586981508467,
+      "wake_kinds": [
+        "thresholds/kl_spike",
+        "thresholds/reward_drop",
+        "thresholds/ev_collapse"
+      ]
+    },
+    {
+      "run_id": "smoke-crash",
+      "profile": "tabpfn",
+      "failure_kind": "crash",
+      "caught": true,
+      "minutes_to_wake": 12.0,
+      "steps_to_wake": -1328,
+      "first_wake_source": "rules/stalled",
+      "false_wakes": 0,
+      "hours": 0.01058579299185011,
+      "wake_kinds": [
+        "rules/stalled"
+      ]
+    },
+    {
+      "run_id": "smoke-flip",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": false,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.0334436082177692,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "smoke-healthy",
+      "profile": "tabpfn",
+      "failure_kind": "none",
+      "caught": null,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 1,
+      "hours": 0.03285373727480571,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "smoke-lr",
+      "profile": "tabpfn",
+      "failure_kind": "lr_blowup",
+      "caught": false,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.03290586981508467,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "smoke-crash",
+      "profile": "vision",
+      "failure_kind": "crash",
+      "caught": true,
+      "minutes_to_wake": 12.0,
+      "steps_to_wake": -1328,
+      "first_wake_source": "rules/stalled",
+      "false_wakes": 0,
+      "hours": 0.01058579299185011,
+      "wake_kinds": [
+        "rules/stalled"
+      ]
+    },
+    {
+      "run_id": "smoke-flip",
+      "profile": "vision",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.3,
+      "steps_to_wake": 10000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.0334436082177692,
+      "wake_kinds": [
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "smoke-healthy",
+      "profile": "vision",
+      "failure_kind": "none",
+      "caught": null,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.03285373727480571,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "smoke-lr",
+      "profile": "vision",
+      "failure_kind": "lr_blowup",
+      "caught": false,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.03290586981508467,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "smoke-crash",
+      "profile": "nightwatch",
+      "failure_kind": "crash",
+      "caught": true,
+      "minutes_to_wake": 12.0,
+      "steps_to_wake": -1328,
+      "first_wake_source": "rules/stalled",
+      "false_wakes": 0,
+      "hours": 0.01058579299185011,
+      "wake_kinds": [
+        "rules/stalled"
+      ]
+    },
+    {
+      "run_id": "smoke-flip",
+      "profile": "nightwatch",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.3,
+      "steps_to_wake": 10000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.0334436082177692,
+      "wake_kinds": [
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "smoke-healthy",
+      "profile": "nightwatch",
+      "failure_kind": "none",
+      "caught": null,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 1,
+      "hours": 0.03285373727480571,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "smoke-lr",
+      "profile": "nightwatch",
+      "failure_kind": "lr_blowup",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 2528,
+      "first_wake_source": "thresholds/kl_spike",
+      "false_wakes": 0,
+      "hours": 0.03290586981508467,
+      "wake_kinds": [
+        "thresholds/kl_spike",
+        "thresholds/reward_drop",
+        "thresholds/ev_collapse"
+      ]
+    }
+  ],
+  "tabpfn": {
+    "backend": "tabpfn-local-v3.5",
+    "windows": 84,
+    "positives": 32,
+    "auroc": 0.418,
+    "seconds": 12.1,
+    "features": 22
+  },
+  "vision": {
+    "tp": 6,
+    "fp": 0,
+    "fn": 0,
+    "tn": 17,
+    "unjudged": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "median_latency_s": 25.69,
+    "median_tokens": 868
+  },
+  "vision_rows": [
+    {
+      "run": "smoke-crash",
+      "step": 10000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "smoke-crash",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "smoke-flip",
+      "step": 10000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "smoke-flip",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "smoke-flip",
+      "step": 30000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "smoke-flip",
+      "step": 40000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "smoke-flip",
+      "step": 50000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "smoke-flip",
+      "step": 60000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "smoke-flip",
+      "step": 61440,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "smoke-healthy",
+      "step": 10000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "smoke-healthy",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "smoke-healthy",
+      "step": 30000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "smoke-healthy",
+      "step": 40000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: top/not_visible, top/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "smoke-healthy",
+      "step": 50000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: top/not_visible, top/top, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "smoke-healthy",
+      "step": 60000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "smoke-healthy",
+      "step": 61440,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: top/not_visible, top/not_visible, top/not_visible, top/not_visible"
+    },
+    {
+      "run": "smoke-lr",
+      "step": 10000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "smoke-lr",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "smoke-lr",
+      "step": 30000,
+      "truth": "ok",
+      "posture": "mid_flip",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, top/bottom, top/bottom"
+    },
+    {
+      "run": "smoke-lr",
+      "step": 40000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "smoke-lr",
+      "step": 50000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: bottom/top, top/bottom, top/bottom, not_visible/not_visible"
+    },
+    {
+      "run": "smoke-lr",
+      "step": 60000,
+      "truth": "ok",
+      "posture": "mid_flip",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, not_visible/top, top/bottom, top/bottom"
+    },
+    {
+      "run": "smoke-lr",
+      "step": 61440,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/top, top/bottom, top/bottom, top/bottom"
+    }
+  ],
+  "failures": {
+    "smoke-crash": [
+      {
+        "kind": "crash",
+        "onset_step": 30000,
+        "onset_t": 1792511574.5123668,
+        "source": "injected"
+      }
+    ],
+    "smoke-flip": [
+      {
+        "kind": "flipped",
+        "onset_step": 40000,
+        "onset_t": 1792511488.00793,
+        "source": "behaviour"
+      }
+    ],
+    "smoke-healthy": [],
+    "smoke-lr": [
+      {
+        "kind": "lr_blowup",
+        "onset_step": 20000,
+        "onset_t": 1792511450.5987935,
+        "source": "injected"
+      }
+    ]
+  }
+}

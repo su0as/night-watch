@@ -35,16 +35,20 @@ from ..runlog import append_jsonl, read_jsonl
 from .base import Observation, Signal
 
 PROMPT_VERSION = "v3"
-HEAD_PROMPT_VERSION = "head-v1"
+HEAD_PROMPT_VERSION = "head-v3"
 
-HEAD_PROMPT = ("This picture comes from a camera fixed to the front of a robot, looking straight ahead along "
-               "its body. Where is the checkered floor in the picture: in the bottom half, in the top half, "
-               "along the left or right side, or not visible?")
+HEAD_PROMPT = ("This picture comes from a camera fixed inside a robot's body, looking straight ahead. "
+               "Answer two questions about the picture.\n"
+               "1. Where is the checkered floor: in the bottom half, in the top half, filling the whole picture, "
+               "along the left or right side, or not visible at all?\n"
+               "2. Where is the plain grey sky: in the top half, in the bottom half, filling the whole picture, "
+               "along the left or right side, or not visible at all?")
 
+_POS = ["bottom_half", "top_half", "whole_picture", "left_or_right", "not_visible"]
 HEAD_SCHEMA = {
     "type": "object",
-    "properties": {"floor": {"type": "string", "enum": ["bottom_half", "top_half", "left_or_right", "not_visible"]}},
-    "required": ["floor"],
+    "properties": {"floor": {"type": "string", "enum": _POS}, "sky": {"type": "string", "enum": _POS}},
+    "required": ["floor", "sky"],
 }
 
 POSTURES = ["upright", "upside_down", "on_its_side", "mid_flip", "broken", "unclear"]
@@ -245,7 +249,7 @@ class VisionJudge:
 
     def _judge_head(self, root: Path, frame_row: dict) -> Verdict:
         """One short question per head-camera snapshot; the decision is made by code."""
-        from ..cameras import posture_from_floor
+        from ..cameras import posture_from_votes, snapshot_vote
 
         sheet = frame_row["sheet"]
         heads = [h for h in (frame_row.get("head") or []) if h][-self.head_snapshots:]
@@ -253,7 +257,7 @@ class VisionJudge:
                     think=False)
         if self.client is None:
             return Verdict(**base, ok=False, error="no model client")
-        floors, lat, tin, tout = [], 0.0, 0, 0
+        floors, skies, lat, tin, tout = [], [], 0.0, 0, 0
         for rel in heads:
             try:
                 data, res = self.client.chat_json(self.model, HEAD_PROMPT, HEAD_SCHEMA,
@@ -264,12 +268,15 @@ class VisionJudge:
             lat += res.latency_s
             tin += res.input_tokens
             tout += res.output_tokens
-            floor = (data or {}).get("floor")
-            floors.append(floor if floor in HEAD_SCHEMA["properties"]["floor"]["enum"] else "not_visible")
-        posture, motion, feet = posture_from_floor(floors)
+            floor, sky = (data or {}).get("floor"), (data or {}).get("sky")
+            floors.append(floor if floor in _POS else "not_visible")
+            skies.append(sky if sky in _POS else "not_visible")
+        votes = [snapshot_vote(f, k) for f, k in zip(floors, skies)]
+        posture, motion, feet = posture_from_votes(votes)
         v = Verdict(**base, ok=True, posture=posture, motion=motion, feet=feet,
-                    robot_visible=any(f != "not_visible" for f in floors),
-                    why="head camera, floor: " + ", ".join(f.replace("_", " ") for f in floors),
+                    robot_visible=any(f != "not_visible" for f in floors + skies),
+                    why="head camera, floor/sky: " + ", ".join(
+                        f"{f.replace('_half', '')}/{k.replace('_half', '')}" for f, k in zip(floors, skies)),
                     latency_s=round(lat, 2), input_tokens=tin, output_tokens=tout)
         v.looks_wrong = v.wrong
         append_jsonl(root / self.cache_name, asdict(v))

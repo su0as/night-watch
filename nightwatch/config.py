@@ -37,8 +37,9 @@ def _flag(name: str, default: bool) -> bool:
 class Settings:
     runs_dir: str = "runs"
     ollama_url: str = "http://localhost:11434"
-    vision_model: str = "gemma4:e4b"
-    text_model: str = "gemma4:e4b"
+    ollama_keep_alive: str = ""
+    vision_model: str = "gemma4:e4b-it-qat"
+    text_model: str = "gemma4:e4b-it-qat"
     vision_view: str = "head"
     vision_think: bool = False
     vision_max_tokens: int = 1500
@@ -68,8 +69,9 @@ class Settings:
         return cls(
             runs_dir=_env("NW_RUNS_DIR", "runs"),
             ollama_url=_env("NW_OLLAMA_URL", "http://localhost:11434").rstrip("/"),
-            vision_model=_env("NW_VISION_MODEL", "gemma4:e4b"),
-            text_model=_env("NW_TEXT_MODEL", "gemma4:e4b"),
+            ollama_keep_alive=_env("NW_OLLAMA_KEEP_ALIVE", ""),
+            vision_model=_env("NW_VISION_MODEL", "gemma4:e4b-it-qat"),
+            text_model=_env("NW_TEXT_MODEL", "gemma4:e4b-it-qat"),
             vision_view=_env("NW_VISION_VIEW", "head").lower(),
             vision_think=_flag("NW_VISION_THINK", False),
             vision_max_tokens=int(_env("NW_VISION_MAX_TOKENS", "1500") or 1500),

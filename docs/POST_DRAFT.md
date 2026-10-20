@@ -6,8 +6,31 @@ DRAFT for the DEV post. Do not publish with any [[...]] left in it.
 
 Title options (pick one after you see the results):
 1. My robot's reward went up all night. It had learned to lie on its back.
-2. I wanted to sleep while my robot learned to run, so two open models watch it for me
-3. Night Watch: TabPFN reads my training logs, Gemma watches my robot, and I sleep
+2. Gemma couldn't tell my robot was upside down. So I gave the robot a head camera.
+3. I wanted to sleep while my robot learned to run, so two open models watch it for me
+4. Night Watch: TabPFN reads my training logs, Gemma watches my robot, and I sleep
+
+VERIFIED on the Windows laptop (i7-1165G7, 16 GB, Iris Xe), 20 Oct 2026. You can quote these:
+- docs/EYETEST.md: gemma4:e4b-it-qat, 12 controlled test episodes (6 upright, 6 upside down).
+  Side camera: 6/12 right, 0/6 upside-down caught (it said "upright" every time), both as a 2x2 sheet
+  of 320x240 snapshots and as full 1024x768 snapshots. Head camera: 12/12, 6/6, 48/48 floor answers right,
+  ~19 s per test episode (4 looks of ~5 s on the iGPU).
+- Also tried and failed from the side: other wordings ("what touches the floor", "is the body above the
+  feet"), a reference picture, bigger pictures, thinking mode (6 minutes per look on the laptop, still
+  wrong on upside-down), gemma4:12b (does not fit the iGPU: ErrorOutOfDeviceMemory).
+- Ollama gives Gemma 4 about one image token per 48x48 px: 320x240 = 80 tokens, a 640x480 2x2 sheet = ~130
+  for all four snapshots, 1024x768 = 336.
+- TabPFN-3.5 local on the laptop CPU, 2,300 training windows: default fit 7 s but every predict ~96 s;
+  fit_with_cache 92 s once, then 0.7-0.9 s per live check, same accuracy (0.95 on a synthetic table).
+- PPO, 3 runs in parallel on 4 cores: 485 steps/s per run with 4 torch threads each, 610 with 1 thread each.
+- The laptop was set to sleep after 10 minutes on AC. Training and the watcher now ask Windows to stay awake.
+- Gymnasium's floor is a mirror (reflectance 0.5): every picture also had an upside-down robot in the floor.
+- TabPFN's licence prompt crashes on Windows (select() on stdin); a TABPFN_TOKEN works.
+- First head-camera mount was on the robot's nose. In the healthy smoke run the robot learned a nose-down
+  crouch, the camera went through the floor, rendered the floor's underside, and Gemma said "floor in the top
+  half": a false wake of my own making (smoke eval: Gemma precision 0.75, 2 false positives). Fix: camera at
+  the torso centre, robot's own geoms hidden from it (an artificial horizon), plus a "floor fills the whole
+  picture" answer that counts as no evidence. The eyetest now includes crouch poses so this stays caught.
 Cover image: a frame of the cheetah on its back next to the rising reward curve.
 -->
 
@@ -39,7 +62,7 @@ It learned to lie on its back and kick. You only catch that by looking at it.
 
 **Night Watch** looks for me. While a robot trains overnight:
 
-- **Gemma 4** (running locally through Ollama) looks at snapshots of the robot every 20k training steps and compares them with the robot's own first picture;
+- **Gemma 4** (running locally through Ollama) looks through a camera bolted to the robot's head every 20k training steps and says where the floor is;
 - **TabPFN** reads the training metrics and asks whether they look like past runs that broke;
 - a few **plain rules** catch NaNs, a silent log and a dead process;
 - a **Temporal** workflow keeps the watch alive even if the watcher itself dies at 3 a.m.
@@ -89,13 +112,27 @@ Then I broke things on purpose, 12 runs in total:
 | 1 x stall | the training loop hangs; the process stays alive |
 | 1 x crash | the process just disappears |
 
-### Gemma 4 looks at the robot
+### Gemma 4 couldn't see it. So the robot got a head camera.
 
-Every 20k steps the trainer plays a short test episode and saves four snapshots as one 2x2 image. Gemma gets **two** images: the robot's very first sheet (untrained, but standing the right way up) as a reference, and the newest sheet. That one trick means there's no robot-specific code for "what upright looks like".
+My first version showed Gemma the obvious picture: the side view, four snapshots in a 2x2 grid, plus the robot's first picture as a reference. Before trusting it with a night, I tested its eyesight: drop the robot into a known pose (the right way up, or on its back), let the physics settle it, take four snapshots exactly like a real test episode, and ask the same judge that runs at night. The simulator knows the true answer.
 
-It answers in a fixed JSON schema: `posture` (upright, upside_down, on_its_side, mid_flip, broken, unclear) and `motion` (moving_forward, spinning, stuck...), plus a short "why". **Only the enum fields decide a wake-up.** The "why" goes into the message so I know what it saw, but a chatty answer can't wake me on its own. It also has to see the problem twice in a row.
+It called every robot "upright". Including the six lying on their backs with their legs in the air.
 
-[[One or two real examples from docs/EVAL.json vision_rows: what it said for a flipped sheet, and one it got wrong]]
+I tried the usual fixes. Bigger pictures (Ollama gives Gemma about one image token per 48x48 pixels, so each snapshot in my 640x480 grid got ~33 tokens; at 1024x768 it gets 336). Different questions ("what is touching the floor?", "is the body above the feet?"). Letting it think first: 6 minutes per look on my laptop, and still wrong. The 12B model: doesn't fit my laptop's iGPU.
+
+Then I thought about it like a robotics problem instead of a prompt problem. A real robot doesn't work out which way up it is from a photographer standing beside it. It has its own sensors. So I bolted a camera to the robot's head (in a render-only copy of the model, so the physics is untouched). When the robot flips, its camera flips with it, and the question becomes: **where is the floor in this picture?**
+
+![side camera vs head camera, and what Gemma said](https://raw.githubusercontent.com/su0as/night-watch/main/docs/assets/eyetest_side_vs_head.png)
+
+| what Gemma is shown | right calls | upside-down robots caught | seconds per test episode |
+|---|---|---|---|
+| side camera, 2x2 sheet (my first version) | 6 / 12 | 0 / 6 | 10 |
+| side camera, full-size snapshots | 6 / 12 | 0 / 6 | 19 |
+| head camera | **12 / 12** | **6 / 6** | 19 |
+
+Gemma answers one question per head-camera snapshot, in a fixed JSON schema (floor in the bottom half, top half, a side, or not visible). **Plain code** turns the four answers into a posture: floor mostly on top means upside down, floor jumping between top and bottom means spinning. Gemma never decides to wake me; it only reports what it sees, and it has to be the same two test episodes in a row.
+
+[[One or two real examples from docs/EVAL.json vision_rows on your real runs: what it said for a flipped run, and anything it got wrong]]
 
 ### TabPFN reads the metrics
 
@@ -138,7 +175,11 @@ TabPFN on its own: AUROC [[ ]] over [[N]] windows, leave-one-run-out.
 
 ### What it can't see
 
-- **Four snapshots aren't a video.** A gait that's slowly getting worse, or a robot that's upright but walking backwards, can slip past.
+- **The head camera answers one question well: which way up.** It doesn't see a robot that is upright but limping, crawling or walking backwards. Gemma couldn't judge those from the side view either, in my tests.
+- **The camera is per robot.** Where to bolt it is one line per robot in `cameras.py` (HalfCheetah, Hopper, Walker2d, Ant, Humanoid have one); I only evaluated HalfCheetah.
+- **My first camera caused a false alarm.** I put it on the robot's nose. The healthy run learned to crouch nose-down, the camera went through the floor, and Gemma faithfully reported the floor in a strange place. It now sits in the middle of the body and only draws the world, not the robot: an artificial horizon.
+- **Is a head camera cheating?** If all you want to know is "is it upside down", log the torso angle; that's one line of code, and you should. The watcher is meant to work from what a training script already produces (metrics and pictures) and catch the things you didn't write a check for. The head camera is the cheapest picture a 4B model reads reliably; a spinning robot shows up in it too (the floor moves between snapshots).
+- **Four snapshots aren't a video.** A gait that's slowly getting worse can slip past.
 - **TabPFN has seen 12 runs of one robot.** A different robot or algorithm needs its own examples first (`nightwatch fit` on your own runs).
 - **The crash and stall were caught by the plain rules, not by AI.** That's fine, and it's why the rules are there.
 - **Ground truth is my definition.** "Flipped" means body tilt over 120 degrees for at least half of a test episode, two test episodes in a row. Another threshold would move the numbers.
@@ -154,7 +195,7 @@ TabPFN on its own: AUROC [[ ]] over [[N]] windows, leave-one-run-out.
 
 **I could read and change every part.** I swapped Gemma sizes with one setting (`gemma4:e2b` on CPU, `gemma4:e4b` on [[your GPU]]), read TabPFN's source to choose a model version, and ran exactly the same models in the evaluation as in the live watch.
 
-**Where a closed model would be better:** judging the pictures. A frontier vision model would probably tell "mid-flip" from "upside down" more reliably from four frames, and could watch a short video instead. It would also need the same checks around it, and it would mean a bill and a data flow I'd have to think about every single night.
+**Where a closed model would be better:** judging the side view. A frontier vision model would very likely see the flip from the side camera that my 4B model was blind to, and could watch a short video instead. But I only found out my model was blind because I could test it cheaply and repeatedly on my own laptop, and the fix (a camera) came from owning the whole stack, renderer included. A closed model would also mean ~400 images a night leaving my machine, and a bill.
 
 ## My Agent Session
 
@@ -169,8 +210,8 @@ TabPFN on its own: AUROC [[ ]] over [[N]] windows, leave-one-run-out.
 
 ## Prize Categories
 
-- **Best Use of TabPFN**: TabPFN-3.5 (local open weights) is the metrics watcher. It learns in context from a table of past runs' log windows labelled healthy or broken, and is evaluated leave-one-run-out against simulator ground truth.
-- **Best Use of Gemma**: Gemma 4 E4B runs locally through Ollama. It looks at a reference picture and the latest snapshots of the robot, answers in a fixed JSON schema, and writes the morning summary, whose numbers are checked against the facts.
+- **Best Use of TabPFN**: TabPFN-3.5 (local open weights, laptop CPU) is the metrics watcher. It learns in context from a table of past runs' log windows labelled healthy or broken, and is evaluated leave-one-run-out against simulator ground truth. The live watcher fits once with `fit_with_cache`, so each 5-minute check takes under a second instead of ~96 s.
+- **Best Use of Gemma**: Gemma 4 E4B (QAT build, on a laptop iGPU through Ollama) looks through a head camera bolted to the robot and says where the floor is, in a fixed JSON schema; code turns that into upright / upside down / spinning. Its eyesight is measured against the simulator (`nightwatch eyetest`), including the side view it could not judge. It also writes the morning summary, whose numbers are checked against the facts.
 - **Best Use of Temporal**: the overnight watch is a Temporal workflow with durable timers, retried activities for the flaky model calls, continue-as-new with carried state, stop/snooze signals and a status query. It survived the worker being killed mid-night.
 - [[Best Use of Sentry Agent Tracing: only if you set SENTRY_DSN and include a trace screenshot of a Gemma call]]
 

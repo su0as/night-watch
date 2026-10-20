@@ -22,10 +22,19 @@ def workflow_id(run_dir: str) -> str:
     return f"nightwatch-{Path(run_dir).resolve().name}"
 
 
-async def run_worker(settings: Settings) -> None:
+async def run_worker(settings: Settings, warm_profile: str | None = "nightwatch") -> None:
     from ..keepawake import keep_awake
 
     client = await Client.connect(settings.temporal_address)
+    if warm_profile:
+        from ..runtime import get_context
+
+        print(f"[worker] warming up the '{warm_profile}' detectors (TabPFN fit, Gemma client)...", flush=True)
+        problems = get_context(warm_profile, settings).warm_up()
+        for p in problems:
+            print(f"[worker] WARNING {p}", flush=True)
+        if not problems:
+            print("[worker] all detectors ready", flush=True)
     with ThreadPoolExecutor(max_workers=4) as pool, keep_awake() as awake:
         worker = Worker(client, task_queue=settings.task_queue, workflows=[NightWatch], activities=ALL,
                         activity_executor=pool)
@@ -56,5 +65,5 @@ async def signal(settings: Settings, run_dir: str, name: str, *args) -> None:
         await handle.signal(NightWatch.snooze, float(args[0]) if args else 60.0)
 
 
-def main(settings: Settings) -> None:
-    asyncio.run(run_worker(settings))
+def main(settings: Settings, warm_profile: str | None = "nightwatch") -> None:
+    asyncio.run(run_worker(settings, warm_profile))

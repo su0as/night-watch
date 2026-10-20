@@ -33,6 +33,12 @@ async def fake_metrics(inp: CheckInput) -> CheckOutput:
     return CheckOutput()
 
 
+@activity.defn(name="check_thresholds")
+async def fake_thresholds(inp: CheckInput) -> CheckOutput:
+    CALLS["thresholds"] = CALLS.get("thresholds", 0) + 1
+    return CheckOutput()
+
+
 @activity.defn(name="check_robot")
 async def fake_robot(inp: CheckInput) -> CheckOutput:
     CALLS["robot"] = CALLS.get("robot", 0) + 1
@@ -58,7 +64,7 @@ def test_eight_hour_night_with_continue_as_new():
     async def go():
         async with await WorkflowEnvironment.start_time_skipping() as env:
             async with Worker(env.client, task_queue="nw-test", workflows=[NightWatch],
-                              activities=[fake_rules, fake_metrics, fake_robot, fake_alert, fake_report]):
+                              activities=[fake_rules, fake_thresholds, fake_metrics, fake_robot, fake_alert, fake_report]):
                 now = (await env.get_current_time()).timestamp()
                 p = WatchParams(run_dir="/tmp/run", profile="nightwatch", until_ts=now + 8 * 3600,
                                 check_every_s=300, checks_per_history=20)
@@ -67,6 +73,7 @@ def test_eight_hour_night_with_continue_as_new():
     result = asyncio.run(go())
     assert result == "report.md"
     assert 90 <= CALLS["checks"] <= 100                    # one check every 5 min for 8 h
+    assert CALLS["thresholds"] == CALLS["checks"]          # the cheap alerts run on every check too
     stalls = [a for a in CALLS["alerts"] if "stalled" in a]
     assert len(stalls) == 1                                # snoozed after the first wake, across continue-as-new
     assert CALLS["alerts"][-1] == "Night Watch: morning report"

@@ -183,8 +183,9 @@ def _machine(settings: Settings) -> None:
     if commit is not None:
         if commit < 4:
             _warn(f"only {commit:.1f} GB of commit (RAM + page file) left. Gemma, TabPFN and 3 training runs "
-                  "can run Windows out of memory overnight. Close apps, or add a page file on a roomier drive "
-                  "(System Properties > Advanced > Performance > Virtual memory)")
+                  "can run Windows out of memory overnight (seen: 'paging file is too small', error 1455, and a "
+                  "TabPFN access violation). Set NW_OLLAMA_KEEP_ALIVE=2m, close apps, or add a page file on a "
+                  "roomier drive (System Properties > Advanced > Performance > Virtual memory)")
         else:
             _ok(f"{commit:.1f} GB of commit (RAM + page file) left")
     from .keepawake import windows_sleep_settings

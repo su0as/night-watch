@@ -90,7 +90,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--every", type=float, default=None)
     _profile_arg(p)
 
-    sub.add_parser("worker", help="run the Temporal worker")
+    p = sub.add_parser("worker", help="run the Temporal worker")
+    p.add_argument("--warm", default="nightwatch", help="profile to load at start ('' to skip)")
 
     p = sub.add_parser("start", help="start the durable overnight watch on Temporal")
     p.add_argument("run")
@@ -201,7 +202,7 @@ def main(argv: list[str] | None = None) -> None:
     if args.cmd == "worker":
         from .temporal_app.worker import main as worker_main
 
-        worker_main(s)
+        worker_main(s, args.warm or None)
         return
 
     if args.cmd == "start":
@@ -228,7 +229,6 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     if args.cmd == "report":
-        from .detectors import PROFILES, build_detectors
         from .evaluation.replay import Preloaded, check_times
         from .policy import PolicyConfig, PolicyState, decide
         from .report import write_morning_report
@@ -238,7 +238,7 @@ def main(argv: list[str] | None = None) -> None:
         pre = Preloaded.load(args.run)
         state = PolicyState()
         cfg = PolicyConfig(max_wakes=s.max_wakes, snooze_s=s.snooze_min * 60)
-        detectors = build_detectors(PROFILES[args.profile], tabpfn_model=ctx.tabpfn_model, vision_judge=ctx.judge)
+        detectors = ctx.detectors
         from .detectors import run_detectors
 
         times = check_times(pre)

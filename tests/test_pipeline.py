@@ -186,6 +186,9 @@ def test_posture_from_floor_is_plain_code():
     p, m, _ = posture_from_floor(["bottom_half", "top_half", "bottom_half", "top_half"])
     assert m == "spinning"
     assert posture_from_floor(["not_visible"] * 4)[0] == "unclear"
+    # a nose-down crouch fills the picture with floor: not evidence of being upside down
+    assert posture_from_floor(["whole_picture", "whole_picture", "top_half", "bottom_half"])[0] == "mid_flip"
+    assert posture_from_floor(["whole_picture"] * 4)[0] == "unclear"
     assert posture_from_floor(["left_or_right"] * 3 + ["bottom_half"])[0] == "on_its_side"
 
 
@@ -198,7 +201,8 @@ class FloorClient:
         self.prompts.append(prompt)
         assert len(images_b64) == 1 and "floor" in schema["properties"]
         a = self.answers.pop(0)
-        return {"floor": a}, ChatResult(json.dumps({"floor": a}), model, 5.0, 140, 8)
+        ans = {"floor": a[0], "sky": a[1]} if isinstance(a, tuple) else {"floor": a}
+        return ans, ChatResult(json.dumps(ans), model, 5.0, 140, 8)
 
 
 def test_head_camera_judge_asks_one_question_per_snapshot(tmp_path, monkeypatch):
@@ -206,11 +210,17 @@ def test_head_camera_judge_asks_one_question_per_snapshot(tmp_path, monkeypatch)
 
     monkeypatch.setattr(vision_mod, "image_b64", lambda p, max_side=1024: "x")
     row = {"step": 9, "sheet": "frames/s9_sheet.png", "frames": [], "head": [f"frames/s9_head{i}.png" for i in range(4)]}
-    client = FloorClient(["top_half", "top_half", "top_half", "not_visible"])
+    client = FloorClient([("top_half", "bottom_half")] * 3 + [("not_visible", "whole_picture")])
     judge = VisionJudge(client, model="m")
     v = judge.judge(tmp_path, row, "", "HalfCheetah-v5")
     assert v.ok and v.posture == "upside_down" and v.wrong and len(client.prompts) == 4
-    assert "floor" in v.why and v.prompt_version.startswith("head-")
+    assert "floor/sky" in v.why and v.prompt_version.startswith("head-")
+    # a steep nose-down crouch: floor everywhere, a strip of sky at the top. Not upside down.
+    crouch = VisionJudge(FloorClient([("top_half", "top_half"), ("whole_picture", "top_half"),
+                                      ("top_half", "not_visible"), ("whole_picture", "top_half")]), model="m")
+    row2 = dict(row, sheet="frames/s10_sheet.png")
+    vc = crouch.judge(tmp_path, row2, "", "HalfCheetah-v5")
+    assert vc.posture != "upside_down" and not vc.wrong
     assert judge.cached(tmp_path, row["sheet"]) is not None  # cached under the head version
     # the side view is still used for runs without head frames, or when asked for
     side = VisionJudge(FakeClient({"robot_visible": True, "posture": "upright", "motion": "stuck", "why": "-"}),

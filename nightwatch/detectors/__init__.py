@@ -3,7 +3,7 @@
     thresholds  rules + classic alert thresholds  (what most people run today)
     tabpfn      rules + TabPFN on training metrics
     vision      rules + Gemma looking at the robot
-    nightwatch  rules + TabPFN + Gemma            (the full thing)
+    nightwatch  rules + thresholds + TabPFN + Gemma   (the full thing: the cheap alerts stay on)
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ PROFILES: dict[str, list[str]] = {
     "thresholds": ["rules", "thresholds"],
     "tabpfn": ["rules", "tabpfn"],
     "vision": ["rules", "vision"],
-    "nightwatch": ["rules", "tabpfn", "vision"],
+    "nightwatch": ["rules", "thresholds", "tabpfn", "vision"],
 }
 
 
