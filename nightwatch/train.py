@@ -88,14 +88,24 @@ CAMERA_DISTANCE = {"HalfCheetah": 3.0, "Hopper": 3.5, "Walker2d": 4.0, "Ant": 5.
 
 
 def camera_config(env_id: str) -> dict:
-    """A camera that follows the torso from the side.
+    """Side view, closer than Gymnasium's default so the robot fills more of the frame.
 
-    Gymnasium's default for these robots is a *fixed* free camera, so once the robot learns
-    to run it leaves the frame within one test episode and the watcher sees an empty floor.
-    type=2 is mjCAMERA_TRACKING; body 1 is the torso/root in all of these models.
+    Gymnasium renders these robots with a *free* camera that stays where it started (it resets
+    the camera type on every render), so a robot that learns to run leaves the frame within one
+    test episode. aim_camera() below re-points it at the torso before every snapshot.
     """
     dist = next((d for k, d in CAMERA_DISTANCE.items() if env_id.startswith(k)), 4.0)
-    return {"type": 2, "trackbodyid": 1, "distance": dist, "elevation": -12.0, "azimuth": 90.0}
+    return {"distance": dist, "elevation": -12.0, "azimuth": 90.0}
+
+
+def aim_camera(env: gym.Env) -> None:
+    """Point the render camera at the torso (body 1 in all of these models)."""
+    u = env.unwrapped
+    try:
+        viewer = u.mujoco_renderer._get_viewer("rgb_array")
+        viewer.cam.lookat[:] = u.data.xpos[1]
+    except Exception:  # noqa: BLE001  older/newer gymnasium: fall back to its default camera
+        pass
 
 
 def sim_warnings(unwrapped) -> int:
@@ -243,6 +253,7 @@ class Telemetry(BaseCallback):
         if self._render_failed:
             return None
         try:
+            aim_camera(env)
             frame = env.render()
             return None if frame is None else np.asarray(frame)
         except Exception as exc:  # noqa: BLE001

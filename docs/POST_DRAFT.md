@@ -27,6 +27,8 @@ There are two reasons to check. The boring one: runs die quietly. A hung data lo
 
 Here is a run I trained this week. I added a reward term to keep the robot's body level and got the sign wrong, so the robot is *paid* for tilting. Look at the reward curve:
 
+<!-- Verified fact you can keep (from the CI smoke run of this repo, 40k steps): reward 709 -> 1244 while a healthy run with the same seed sat around -290; at step 40,000 the simulator says the torso was upside down for 92% of the test episode; the threshold watcher's report said "Nothing worth waking you for". Images: docs/assets/smoke_flip_*.png. Prefer the numbers from your own longer runs if you have them. -->
+
 ![reward climbing all night]([[upload reward.png from runs/flip-s1/report]])
 
 It climbs. Every alert rule I would normally set (reward dropped 30%, KL spiked, loss exploded) stays silent, because nothing is dropping. Now look at the robot:

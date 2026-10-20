@@ -32,7 +32,7 @@ notepad .env                     # set NW_NTFY_TOPIC=<your topic>
 ```powershell
 python -m nightwatch doctor
 python -m nightwatch ping        # your phone should buzz
-python -m pytest -q              # 19 pure-Python tests + the 8-hour Temporal night in seconds
+python -m pytest -q              # 21 pure-Python tests + the 8-hour Temporal night in seconds
 ```
 
 `doctor` checks packages, that MuJoCo can render a HalfCheetah frame, that Ollama is up and Gemma is pulled, that TabPFN imports, and that Temporal is reachable (start it first if you want that line green: `temporal server start-dev --db-filename nightwatch.db`).
@@ -45,7 +45,7 @@ If the Temporal test is skipped, temporalio did not import: run `python -c "impo
 python -m nightwatch runs --smoke --jobs 3
 ```
 
-This trains 3 tiny runs (60k steps each): one healthy, one with the flipped-sign reward bug, and one that crashes at step 30k. Then check:
+This trains 4 tiny runs (60k steps each): healthy, the flipped-sign reward bug, a learning-rate blow-up at 20k, and a crash at 30k. The same smoke runs in CI on every push (GitHub Actions, Linux with software rendering and Windows without), so if it fails on your laptop, compare with the latest CI run. Then check:
 
 - `runs\smoke\smoke-flip\frames\` has PNGs, and the `*_sheet.png` files show a robot (not black). **This matters: Gemma can only judge what it can see.**
 - `runs\smoke\smoke-crash\manifest.json` still says `"status": "running"`. That is correct: a crash leaves no goodbye.
