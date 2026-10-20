@@ -29,9 +29,21 @@ VERSION_ALIASES = {
 }
 
 
-def make_classifier(backend: str = "auto", version: str = "v3.5"):
-    """Return (estimator, backend_name)."""
+def make_classifier(backend: str = "auto", version: str = "v3.5", fit_mode: str | None = None,
+                    n_estimators: int | None = None):
+    """Return (estimator, backend_name).
+
+    fit_mode="fit_with_cache" makes TabPFN keep its attention cache of the training table after
+    fit(), so each later predict() only processes the new rows. On a laptop CPU that turns a
+    check from "re-read every past run" into well under a second, which is what a watcher that
+    predicts every 5 minutes against the same table wants.
+    """
     errors: list[str] = []
+    overrides: dict = {}
+    if fit_mode:
+        overrides["fit_mode"] = fit_mode
+    if n_estimators:
+        overrides["n_estimators"] = int(n_estimators)
     if backend in ("auto", "local"):
         try:
             from tabpfn import TabPFNClassifier
@@ -41,9 +53,9 @@ def make_classifier(backend: str = "auto", version: str = "v3.5"):
                 from tabpfn.constants import ModelVersion
 
                 mv = getattr(ModelVersion, name)
-                clf = TabPFNClassifier.create_default_for_version(mv)
+                clf = TabPFNClassifier.create_default_for_version(mv, **overrides)
             except Exception:  # noqa: BLE001  older/newer package layouts
-                clf = TabPFNClassifier()
+                clf = TabPFNClassifier(**overrides)
             return clf, f"tabpfn-local-{version}"
         except ImportError as exc:
             errors.append(f"local: {exc}")
@@ -66,9 +78,12 @@ def make_classifier(backend: str = "auto", version: str = "v3.5"):
 class WindowModel:
     """A fitted 'does this window look like trouble?' classifier, plus a cheap explanation."""
 
-    def __init__(self, backend: str = "auto", version: str = "v3.5"):
+    def __init__(self, backend: str = "auto", version: str = "v3.5", fit_mode: str | None = None,
+                 n_estimators: int | None = None):
         self.backend = backend
         self.version = version
+        self.fit_mode = fit_mode
+        self.n_estimators = n_estimators
         self.backend_name = "unfitted"
         self._clf = None
         self._constant: float | None = None
@@ -87,7 +102,7 @@ class WindowModel:
             self._constant = float(classes.pop())
             self.backend_name = "constant"
             return self
-        clf, name = make_classifier(self.backend, self.version)
+        clf, name = make_classifier(self.backend, self.version, self.fit_mode, self.n_estimators)
         clf.fit(np.asarray(X, dtype=float), np.asarray(y, dtype=int))
         self._clf, self.backend_name = clf, name
         return self
@@ -141,12 +156,13 @@ class WindowModel:
 
     @classmethod
     def from_table(cls, path: str | Path, backend: str = "auto", version: str = "v3.5",
-                   exclude_run: str | None = None) -> "WindowModel":
+                   exclude_run: str | None = None, fit_mode: str | None = None,
+                   n_estimators: int | None = None) -> "WindowModel":
         X, y, meta = cls.load_table(path)
         if exclude_run:
             keep = [i for i, m in enumerate(meta) if m["run_id"] != exclude_run]
             X, y = [X[i] for i in keep], [y[i] for i in keep]
-        return cls(backend, version).fit(X, y)
+        return cls(backend, version, fit_mode, n_estimators).fit(X, y)
 
 
 ProbLookup = Callable[[str, int], "float | None"]

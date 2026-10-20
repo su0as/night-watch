@@ -88,9 +88,12 @@ class FakeClient:
         self.answer = answer
         self.calls = 0
 
-    def chat_json(self, model, prompt, schema, images_b64=None, purpose=""):
+    def chat_json(self, model, prompt, schema, images_b64=None, purpose="", think=False, max_tokens=None):
         self.calls += 1
-        assert len(images_b64) == 2 and "REFERENCE" in prompt
+        self.think = think
+        self.n_images = len(images_b64)
+        self.prompt = prompt
+        assert images_b64
         return self.answer, ChatResult(json.dumps(self.answer), model, 1.5, 900, 40)
 
 
@@ -122,6 +125,44 @@ def test_vision_judge_schema_cache_and_decision(tmp_path, monkeypatch):
     v = weird.judge(run, {"step": 5, "sheet": "frames/s000000000_sheet.png"}, "frames/s000000000_sheet.png",
                     "HalfCheetah-v5")
     assert v.posture == "unclear" and not v.wrong
+    # Old runs have no full-size frames: the sheet is used, and no reference by default.
+    assert client.n_images == 1 and "REFERENCE" not in client.prompt and client.think is False
+    # Thinking is part of the cache key: a fast verdict is never reused as a thinking one.
+    slow = VisionJudge(FakeClient({"robot_visible": True, "posture": "upright", "motion": "moving_forward",
+                                   "why": "fine"}), model="gemma4:e4b", think=True)
+    assert slow.cached(run, sigs[0].evidence["sheet"]) is None
+
+
+def test_vision_uses_full_size_snapshots_and_optional_reference(tmp_path, monkeypatch):
+    import nightwatch.detectors.vision as vision_mod
+
+    seen = []
+    monkeypatch.setattr(vision_mod, "image_b64", lambda p, max_side=1024: seen.append((str(p), max_side)) or "x")
+    row = {"step": 7, "sheet": "frames/s7_sheet.png", "frames": [f"frames/s7_{i}.png" for i in range(4)]}
+    client = FakeClient({"robot_visible": True, "posture": "upside_down", "motion": "stuck", "why": "legs up"})
+    v = VisionJudge(client, model="m", snapshots=2).judge(tmp_path, row, "frames/ref.png", "HalfCheetah-v5")
+    assert v.wrong and client.n_images == 2
+    assert [p.replace("\\", "/").split("/")[-1] for p, _ in seen] == ["s7_2.png", "s7_3.png"]
+    seen.clear()
+    VisionJudge(client, model="m2", snapshots=1, reference=True).judge(tmp_path, row, "frames/ref.png", "HalfCheetah-v5")
+    assert client.n_images == 2 and "REFERENCE" in client.prompt
+    assert seen[0][0].replace("\\", "/").endswith("frames/ref.png")
+
+
+class TruncatedClient:
+    def chat_json(self, model, prompt, schema, images_b64=None, purpose="", think=False, max_tokens=None):
+        return None, ChatResult('{"robot_visible": true, "feet": "abo', model, 99.0, 900, 1500)
+
+
+def test_vision_truncated_answer_is_not_cached(tmp_path, monkeypatch):
+    import nightwatch.detectors.vision as vision_mod
+
+    monkeypatch.setattr(vision_mod, "image_b64", lambda p, max_side=1024: "aW1n")
+    run = make_run(tmp_path, "flip", "flip")
+    judge = VisionJudge(TruncatedClient(), model="gemma4:e4b")
+    v = judge.judge(run, {"step": 5, "sheet": "frames/a.png"}, "frames/b.png", "HalfCheetah-v5")
+    assert not v.ok and "unparseable" in v.error
+    assert judge.cached(run, "frames/a.png") is None  # retried next check instead of stuck forever
 
 
 def test_morning_report_without_models(tmp_path, monkeypatch):
@@ -135,3 +176,43 @@ def test_morning_report_without_models(tmp_path, monkeypatch):
     rep = write_morning_report(run, st, client=None)
     md = (run / "report" / "morning.md").read_text()
     assert "Woke you" in md and rep["summary_source"] == "template"
+
+
+def test_posture_from_floor_is_plain_code():
+    from nightwatch.cameras import posture_from_floor
+
+    assert posture_from_floor(["bottom_half"] * 4)[0] == "upright"
+    assert posture_from_floor(["top_half", "top_half", "top_half", "bottom_half"])[0] == "upside_down"
+    p, m, _ = posture_from_floor(["bottom_half", "top_half", "bottom_half", "top_half"])
+    assert m == "spinning"
+    assert posture_from_floor(["not_visible"] * 4)[0] == "unclear"
+    assert posture_from_floor(["left_or_right"] * 3 + ["bottom_half"])[0] == "on_its_side"
+
+
+class FloorClient:
+    def __init__(self, answers):
+        self.answers = list(answers)
+        self.prompts = []
+
+    def chat_json(self, model, prompt, schema, images_b64=None, purpose="", think=False, max_tokens=None):
+        self.prompts.append(prompt)
+        assert len(images_b64) == 1 and "floor" in schema["properties"]
+        a = self.answers.pop(0)
+        return {"floor": a}, ChatResult(json.dumps({"floor": a}), model, 5.0, 140, 8)
+
+
+def test_head_camera_judge_asks_one_question_per_snapshot(tmp_path, monkeypatch):
+    import nightwatch.detectors.vision as vision_mod
+
+    monkeypatch.setattr(vision_mod, "image_b64", lambda p, max_side=1024: "x")
+    row = {"step": 9, "sheet": "frames/s9_sheet.png", "frames": [], "head": [f"frames/s9_head{i}.png" for i in range(4)]}
+    client = FloorClient(["top_half", "top_half", "top_half", "not_visible"])
+    judge = VisionJudge(client, model="m")
+    v = judge.judge(tmp_path, row, "", "HalfCheetah-v5")
+    assert v.ok and v.posture == "upside_down" and v.wrong and len(client.prompts) == 4
+    assert "floor" in v.why and v.prompt_version.startswith("head-")
+    assert judge.cached(tmp_path, row["sheet"]) is not None  # cached under the head version
+    # the side view is still used for runs without head frames, or when asked for
+    side = VisionJudge(FakeClient({"robot_visible": True, "posture": "upright", "motion": "stuck", "why": "-"}),
+                       model="m", view="side")
+    assert side.judge(tmp_path, row, "", "HalfCheetah-v5").prompt_version.startswith("v3")

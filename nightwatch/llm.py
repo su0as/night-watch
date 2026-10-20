@@ -28,6 +28,7 @@ class ChatResult:
     latency_s: float
     input_tokens: int
     output_tokens: int
+    thinking: str = ""
 
 
 def image_b64(path: str | Path, max_side: int = 1024) -> str:
@@ -56,16 +57,21 @@ class OllamaClient:
 
     def chat(self, model: str, prompt: str, images_b64: list[str] | None = None,
              schema: dict | None = None, temperature: float = 0.0, num_ctx: int = 8192,
-             purpose: str = "") -> ChatResult:
+             purpose: str = "", think: bool = False, max_tokens: int | None = None) -> ChatResult:
+        """think=True lets Gemma reason before answering. Much slower, and for judging a robot's
+        posture it is the difference between seeing and guessing (see docs/EYETEST.md)."""
         message: dict = {"role": "user", "content": prompt}
         if images_b64:
             message["images"] = images_b64
+        options: dict = {"temperature": temperature, "num_ctx": num_ctx, "seed": 0}
+        if max_tokens:
+            options["num_predict"] = int(max_tokens)
         payload: dict = {
             "model": model,
             "stream": False,
-            "think": False,
+            "think": bool(think),
             "messages": [message],
-            "options": {"temperature": temperature, "num_ctx": num_ctx, "seed": 0},
+            "options": options,
         }
         if schema is not None:
             payload["format"] = schema
@@ -90,10 +96,12 @@ class OllamaClient:
                     time.sleep(2 * (attempt + 1))
                     continue
                 data = r.json()
-                text = (data.get("message") or {}).get("content", "")
+                msg = data.get("message") or {}
+                text = msg.get("content", "")
                 res = ChatResult(text=text, model=model, latency_s=time.time() - start,
                                  input_tokens=int(data.get("prompt_eval_count") or 0),
-                                 output_tokens=int(data.get("eval_count") or 0))
+                                 output_tokens=int(data.get("eval_count") or 0),
+                                 thinking=str(msg.get("thinking") or ""))
                 span.set_data("gen_ai.usage.input_tokens", res.input_tokens)
                 span.set_data("gen_ai.usage.output_tokens", res.output_tokens)
                 span.set_data("gen_ai.response.model", model)
@@ -102,8 +110,10 @@ class OllamaClient:
         raise last_exc or OllamaError("Ollama call failed")
 
     def chat_json(self, model: str, prompt: str, schema: dict, images_b64: list[str] | None = None,
-                  purpose: str = "") -> tuple[dict | None, ChatResult]:
-        res = self.chat(model, prompt, images_b64=images_b64, schema=schema, purpose=purpose)
+                  purpose: str = "", think: bool = False, max_tokens: int | None = None
+                  ) -> tuple[dict | None, ChatResult]:
+        res = self.chat(model, prompt, images_b64=images_b64, schema=schema, purpose=purpose,
+                        think=think, max_tokens=max_tokens)
         try:
             return json.loads(res.text), res
         except json.JSONDecodeError:

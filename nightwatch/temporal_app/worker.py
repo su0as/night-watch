@@ -23,11 +23,14 @@ def workflow_id(run_dir: str) -> str:
 
 
 async def run_worker(settings: Settings) -> None:
+    from ..keepawake import keep_awake
+
     client = await Client.connect(settings.temporal_address)
-    with ThreadPoolExecutor(max_workers=4) as pool:
+    with ThreadPoolExecutor(max_workers=4) as pool, keep_awake() as awake:
         worker = Worker(client, task_queue=settings.task_queue, workflows=[NightWatch], activities=ALL,
                         activity_executor=pool)
-        print(f"[worker] listening on {settings.temporal_address} queue={settings.task_queue}", flush=True)
+        print(f"[worker] listening on {settings.temporal_address} queue={settings.task_queue}"
+              + (" (keeping the computer awake)" if awake else ""), flush=True)
         await worker.run()
 
 

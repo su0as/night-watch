@@ -24,9 +24,9 @@ class WatchContext:
 
         self.client = OllamaClient(settings.ollama_url)
         if "vision" in self.names:
-            from .detectors.vision import VisionJudge
+            from .detectors.vision import make_judge
 
-            self.judge = VisionJudge(self.client, settings.vision_model)
+            self.judge = make_judge(settings, self.client)
         if "tabpfn" in self.names:
             from .detectors.tabpfn_detector import WindowModel
 
@@ -35,8 +35,15 @@ class WatchContext:
                 raise FileNotFoundError(
                     f"TabPFN needs examples of past runs at {table}. Build it with: "
                     f"python -m nightwatch fit --runs runs/dataset --out {table}")
-            self.tabpfn_model = WindowModel.from_table(table, settings.tabpfn_backend, settings.tabpfn_version)
-            print(f"[watch] TabPFN backend: {self.tabpfn_model.backend_name}", flush=True)
+            import time as _time
+
+            t0 = _time.time()
+            # Fitted once per process and asked every few minutes: keep TabPFN's cache.
+            self.tabpfn_model = WindowModel.from_table(table, settings.tabpfn_backend, settings.tabpfn_version,
+                                                       fit_mode=settings.tabpfn_fit_mode or None,
+                                                       n_estimators=settings.tabpfn_estimators or None)
+            print(f"[watch] TabPFN backend: {self.tabpfn_model.backend_name} "
+                  f"(fitted in {_time.time() - t0:.0f} s)", flush=True)
         self.detectors = build_detectors(self.names, tabpfn_model=self.tabpfn_model, vision_judge=self.judge)
 
     def check(self, run_dir: str, now: float | None = None) -> tuple[list[Signal], str, int]:

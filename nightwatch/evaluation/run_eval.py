@@ -74,11 +74,12 @@ def loo_tabpfn(runs: list[Path], settings: Settings) -> tuple[dict, dict]:
 class CacheOnlyJudge:
     """Uses cached Gemma verdicts only; never calls the model (fast, reproducible eval)."""
 
-    def __init__(self, model: str):
+    def __init__(self, model: str, think: bool = True):
         from ..detectors.vision import VisionJudge
 
-        self._inner = VisionJudge(client=None, model=model)
+        self._inner = VisionJudge(client=None, model=model, think=think)
         self.model = model
+        self.think = think
 
     def judge(self, run_dir, frame_row, reference_sheet, env_id):
         from ..detectors.vision import PROMPT_VERSION, Verdict
@@ -87,7 +88,8 @@ class CacheOnlyJudge:
         if hit is not None:
             return hit
         return Verdict(step=int(frame_row["step"]), sheet=frame_row["sheet"], model=self.model,
-                       prompt_version=PROMPT_VERSION, ok=False, error="not in cache (run `nightwatch look` first)")
+                       prompt_version=PROMPT_VERSION, ok=False, think=self.think,
+                       error="not in cache (run `nightwatch look` first)")
 
 
 def vision_accuracy(runs: list[Path], judge) -> dict:
@@ -158,9 +160,10 @@ def run_evaluation(runs_dir: str, profiles: list[str], out_md: str, settings: Se
             from ..detectors.vision import VisionJudge
             from ..llm import OllamaClient
 
-            judge = VisionJudge(OllamaClient(settings.ollama_url), settings.vision_model)
+            judge = VisionJudge(OllamaClient(settings.ollama_url), settings.vision_model,
+                                think=settings.vision_think, max_tokens=settings.vision_max_tokens)
         else:
-            judge = CacheOnlyJudge(settings.vision_model)
+            judge = CacheOnlyJudge(settings.vision_model, settings.vision_think)
 
     failures = {r.name: failures_for_run(r) for r in runs}
     spans = {r.name: run_span(r) for r in runs}
@@ -210,8 +213,10 @@ def run_evaluation(runs_dir: str, profiles: list[str], out_md: str, settings: Se
               f"| Gemma says wrong | {vis['tp']} | {vis['fp']} |",
               f"| Gemma says fine | {vis['fn']} | {vis['tn']} |", "",
               f"- precision {vis['precision']}, recall {vis['recall']}, unjudged sheets {vis['unjudged']}",
-              f"- model `{settings.vision_model}`, median latency {vis['median_latency_s']} s, "
-              f"median tokens per look {vis['median_tokens']}"]
+              f"- model `{settings.vision_model}` ({'thinks first' if settings.vision_think else 'answers straight away'}, "
+              f"{settings.vision_snapshots} snapshot(s) at up to {settings.vision_max_side} px"
+              f"{', with the reference picture' if settings.vision_reference else ''}), "
+              f"median latency {vis['median_latency_s']} s, median tokens per look {vis['median_tokens']}"]
     L += ["", "Settings: " + f"check every {every_s:.0f} s in replay, tail {tail_s / 60:.0f} min after a run goes "
           f"silent, max {cfg.max_wakes} wake-ups per run, snooze {cfg.snooze_s / 60:.0f} min per kind."]
     out = Path(out_md)
@@ -233,7 +238,8 @@ def look_all(runs_dir: str, settings: Settings) -> dict:
     from ..detectors.vision import VisionJudge
     from ..llm import OllamaClient
 
-    judge = VisionJudge(OllamaClient(settings.ollama_url), settings.vision_model)
+    judge = VisionJudge(OllamaClient(settings.ollama_url), settings.vision_model, think=settings.vision_think,
+                        max_tokens=settings.vision_max_tokens)
     done = new = failed = 0
     started = time.time()
     for run in list_runs(runs_dir):

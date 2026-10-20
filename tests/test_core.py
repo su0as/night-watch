@@ -176,3 +176,54 @@ def test_number_guard():
     assert not ok and "1500" in extra
     assert "Quiet night" in template_summary({"run": "r", "watch_from": "a", "watch_to": "b", "reward_start": None,
                                               "wakes": 0, "notes": 0})
+
+
+# ------------------------------------------------------------------ laptop helpers
+
+def test_keep_awake_never_raises(monkeypatch):
+    from nightwatch.keepawake import keep_awake
+
+    monkeypatch.setenv("NW_ALLOW_SLEEP", "1")
+    with keep_awake() as ok:
+        assert ok is False
+    monkeypatch.delenv("NW_ALLOW_SLEEP")
+    with keep_awake() as ok:
+        assert ok in (True, False)
+
+
+def test_threads_split_between_parallel_runs(monkeypatch):
+    import nightwatch.experiments as ex
+
+    monkeypatch.setattr(ex, "physical_cores", lambda: 4)
+    assert ex.threads_per_job(3) == 1
+    assert ex.threads_per_job(2) == 2
+    assert ex.threads_per_job(1) == 4
+    assert ex.threads_per_job(8) == 1
+    assert ex.threads_per_job(3, threads=2) == 2
+
+
+def test_eyetest_scoring():
+    from nightwatch.evaluation.eyetest import summarise_mode, truth_class
+
+    assert truth_class(5) == "upright" and truth_class(170) == "upside_down" and truth_class(90) == "on_its_side"
+    rows = [
+        {"truth": "upright", "posture": "upright", "correct_wake": True, "exact": True, "latency_s": 40.0,
+         "out_tokens": 400, "ok": True},
+        {"truth": "upside_down", "posture": "upright", "correct_wake": False, "exact": False, "latency_s": 50.0,
+         "out_tokens": 500, "ok": True},
+        {"truth": "upside_down", "posture": "unclear", "correct_wake": False, "exact": False, "latency_s": 0.0,
+         "out_tokens": 0, "ok": False},
+    ]
+    s = summarise_mode(rows)
+    assert s["answered"] == 2 and s["wake_decision_correct"] == 1 and s["median_latency_s"] == 45.0
+    assert s["per_truth"]["upside_down"]["said"] == {"upright": 1}
+
+
+def test_settings_vision_think_default(monkeypatch):
+    from nightwatch.config import Settings
+
+    monkeypatch.delenv("NW_VISION_THINK", raising=False)
+    s = Settings.from_env(dotenv=None)
+    assert s.vision_think is False and s.vision_snapshots == 2 and s.vision_max_side == 1024
+    monkeypatch.setenv("NW_VISION_THINK", "1")
+    assert Settings.from_env(dotenv=None).vision_think is True

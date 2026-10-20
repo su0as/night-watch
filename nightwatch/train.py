@@ -108,6 +108,18 @@ def aim_camera(env: gym.Env) -> None:
         pass
 
 
+def matte_floor(env: gym.Env) -> None:
+    """Turn off the mirror floor in the rendered test episodes (rendering only, physics untouched).
+
+    The Gymnasium robots stand on a reflective checkerboard, so every picture also contains an
+    upside-down copy of the robot under it. That is the one thing Night Watch asks Gemma about.
+    """
+    try:
+        env.unwrapped.model.mat_reflectance[:] = 0.0
+    except Exception:  # noqa: BLE001
+        pass
+
+
 def sim_warnings(unwrapped) -> int:
     try:
         return int(sum(int(w.number) for w in unwrapped.data.warning))
@@ -159,9 +171,13 @@ class OneLine(KVWriter):
 
 # --------------------------------------------------------------------------- telemetry
 
-def contact_sheet(frames: list[np.ndarray], cols: int = 2) -> Image.Image:
+def contact_sheet(frames: list[np.ndarray], cols: int = 2, max_width: int = 1024) -> Image.Image:
+    """2x2 overview for humans (reports, alerts). Gemma gets the full-size snapshots instead."""
     imgs = [Image.fromarray(f) for f in frames]
     w, h = imgs[0].size
+    if cols * w > max_width:
+        w, h = max_width // cols, int(h * (max_width // cols) / w)
+        imgs = [im.resize((w, h), Image.LANCZOS) for im in imgs]
     rows = math.ceil(len(imgs) / cols)
     sheet = Image.new("RGB", (cols * w, rows * h), (255, 255, 255))
     for i, im in enumerate(imgs):
@@ -190,6 +206,10 @@ class Telemetry(BaseCallback):
         self._fault_fired = fault.kind == "none" or fault.is_reward_bug
         self._render_failed = False
         self._captures = 0
+        self.cams = None
+
+    def attach_cameras(self, cams) -> None:
+        self.cams = cams if cams is not None and cams.ready else None
 
     # -- lifecycle
     def _on_training_start(self) -> None:
@@ -253,6 +273,9 @@ class Telemetry(BaseCallback):
         if self._render_failed:
             return None
         try:
+            if self.cams is not None:
+                u = env.unwrapped
+                return self.cams.side(u.data.qpos, u.data.qvel)
             aim_camera(env)
             frame = env.render()
             return None if frame is None else np.asarray(frame)
@@ -272,6 +295,7 @@ class Telemetry(BaseCallback):
         truth = EpisodeTruth()
         wanted = set(int(round(x)) for x in np.linspace(self.eval_steps * 0.25, self.eval_steps - 1, self.n_frames))
         frames: list[np.ndarray] = []
+        heads: list[np.ndarray] = []
         ret = 0.0
         for i in range(self.eval_steps):
             o = vecnorm.normalize_obs(obs) if vecnorm is not None else obs
@@ -283,6 +307,14 @@ class Telemetry(BaseCallback):
                 f = self._render(env)
                 if f is not None:
                     frames.append(f)
+                if self.cams is not None and self.cams.has_head:
+                    try:
+                        h = self.cams.head(u.data.qpos, u.data.qvel)
+                    except Exception as exc:  # noqa: BLE001
+                        print(f"[telemetry] head camera failed, continuing without it: {exc}", flush=True)
+                        self.cams.has_head, h = False, None
+                    if h is not None:
+                        heads.append(h)
             if terminated or truncated:
                 obs, _ = env.reset()
         truth.warnings = sim_warnings(u) - w0
@@ -300,8 +332,15 @@ class Telemetry(BaseCallback):
                 rel_frames.append(rel)
             sheet_rel = f"frames/{stem}_sheet.png"
             contact_sheet(frames).save(self.paths.root / sheet_rel)
+        rel_heads: list[str] = []
+        if heads:
+            self.paths.frames_dir.mkdir(parents=True, exist_ok=True)
+            for k, h in enumerate(heads):
+                rel = f"frames/{stem}_head{k}.png"
+                Image.fromarray(h).save(self.paths.root / rel)
+                rel_heads.append(rel)
         append_jsonl(self.paths.frames_log, {
-            "step": step, "t": t, "sheet": sheet_rel, "frames": rel_frames,
+            "step": step, "t": t, "sheet": sheet_rel, "frames": rel_frames, "head": rel_heads,
             "eval_return": round(ret, 3), "eval_steps": self.eval_steps,
             "capture_s": round(t - start, 3),
         })
@@ -315,9 +354,14 @@ class Telemetry(BaseCallback):
 def train(env_id: str = "HalfCheetah-v5", steps: int = 400_000, seed: int = 1,
           fault_spec: str = "none", name: str | None = None, runs_dir: str = "runs",
           preset: str = "fast", frame_every: int = 25_000, eval_steps: int = 300,
-          n_frames: int = 4, width: int = 320, height: int = 240, device: str = "cpu",
-          save_model: bool = False) -> Path:
+          n_frames: int = 4, width: int = 1024, height: int = 768, device: str = "cpu",
+          save_model: bool = False, threads: int | None = None, head_camera: bool = True) -> Path:
     fault = parse_fault(fault_spec)
+    if threads:
+        # A PPO MLP is tiny; several runs at once each grabbing every core just fight each other.
+        import torch
+
+        torch.set_num_threads(int(threads))
     run_name = name or f"{env_id.split('-')[0].lower()}-{fault.kind}-s{seed}-{time.strftime('%m%d-%H%M%S')}"
     paths = RunPaths.of(Path(runs_dir) / run_name)
     if paths.manifest.exists():
@@ -329,7 +373,8 @@ def train(env_id: str = "HalfCheetah-v5", steps: int = 400_000, seed: int = 1,
 
     manifest = {
         "run_id": run_name, "env_id": env_id, "algo": "PPO", "seed": seed, "preset": preset,
-        "total_steps": steps, "frame_every": frame_every, "started_at": time.time(),
+        "total_steps": steps, "frame_every": frame_every, "started_at": time.time(), "threads": threads,
+        "frame_size": [width, height],
         "status": "running", "pid": os.getpid(), "host": platform.node(),
         "versions": {"python": sys.version.split()[0], "gymnasium": gym.__version__,
                      "stable_baselines3": stable_baselines3.__version__},
@@ -352,16 +397,32 @@ def train(env_id: str = "HalfCheetah-v5", steps: int = 400_000, seed: int = 1,
     eval_env = RewardBugWrapper(gym.make(env_id, render_mode="rgb_array", width=width, height=height,
                                          default_camera_config=camera_config(env_id)),
                                 env_id, fault, clock)
+    matte_floor(eval_env)
 
     model = PPO("MlpPolicy", venv, seed=seed, device=device, verbose=0, **ppo_preset(preset))
     model.set_logger(Logger(folder=None, output_formats=[JsonlMetrics(paths.metrics), OneLine()]))
     telemetry = Telemetry(paths, env_id, eval_env, train_envs, fault, clock,
                           frame_every=frame_every, eval_steps=eval_steps, n_frames=n_frames, seed=seed)
+    from .cameras import RobotCameras
+
+    cams = RobotCameras(env_id, width=width, height=height)
+    if cams.attach(eval_env, head=head_camera):
+        telemetry.attach_cameras(cams)
+        print(f"[train] cameras: side {width}x{height}"
+              + (", head camera on (what Gemma looks at)" if cams.has_head else ", no head camera"), flush=True)
+    else:
+        print(f"[train] own cameras unavailable ({cams.error}); using Gymnasium's side view only", flush=True)
+        cams = None
 
     print(f"[train] {run_name}: {env_id}, {steps:,} steps, preset={preset}, fault={fault.kind}@{fault.at_step}",
           flush=True)
+    from .keepawake import keep_awake
+
     try:
-        model.learn(total_timesteps=steps, callback=telemetry, log_interval=1, progress_bar=False)
+        with keep_awake() as awake:
+            if awake:
+                print("[train] asked the OS not to sleep while training", flush=True)
+            model.learn(total_timesteps=steps, callback=telemetry, log_interval=1, progress_bar=False)
     except Exception as exc:  # noqa: BLE001
         m = read_json(paths.manifest, {}) or {}
         m.update({"status": "error", "ended_at": time.time(),
@@ -373,6 +434,8 @@ def train(env_id: str = "HalfCheetah-v5", steps: int = 400_000, seed: int = 1,
         print(f"[train] crashed: {exc}", flush=True)
         raise
     finally:
+        if cams is not None:
+            cams.close()
         eval_env.close()
         venv.close()
 

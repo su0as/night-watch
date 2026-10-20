@@ -38,6 +38,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--frame-every", type=int, default=20_000)
     p.add_argument("--eval-steps", type=int, default=300)
     p.add_argument("--device", default="cpu")
+    p.add_argument("--threads", type=int, default=None, help="torch CPU threads (default: torch decides)")
+    p.add_argument("--frame-size", default="1024x768",
+                   help="snapshot size. Gemma gets ~1 image token per 48x48 px, so small frames blind it")
+    p.add_argument("--no-head-camera", action="store_true", help="side camera only (Gemma cannot judge posture then)")
     p.add_argument("--save-model", action="store_true")
 
     p = sub.add_parser("runs", help="record the evaluation runs (healthy + broken), several at once")
@@ -47,8 +51,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--env", default="HalfCheetah-v5")
     p.add_argument("--preset", default="fast", choices=["fast", "zoo"])
     p.add_argument("--frame-every", type=int, default=20_000)
-    p.add_argument("--smoke", action="store_true", help="3 tiny runs to check the pipeline end to end")
+    p.add_argument("--smoke", action="store_true", help="4 tiny runs to check the pipeline end to end")
     p.add_argument("--only", nargs="*", default=None)
+    p.add_argument("--threads", type=int, default=None,
+                   help="torch threads per run (default: CPU cores / jobs, at least 1)")
 
     p = sub.add_parser("fit", help="build TabPFN's table of past runs (models/windows.csv)")
     p.add_argument("--runs", default="runs/dataset")
@@ -56,6 +62,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("look", help="let Gemma look at every test episode of every run (fills the cache)")
     p.add_argument("--runs", default="runs/dataset")
+
+    p = sub.add_parser("eyetest", help="controlled check: can Gemma tell which way up the robot is?")
+    p.add_argument("--dir", default="runs/eyetest")
+    p.add_argument("--env", default="HalfCheetah-v5")
+    p.add_argument("--per-class", type=int, default=6)
+    p.add_argument("--modes", nargs="*", default=["side", "head"], choices=["side", "side-think", "head"])
+    p.add_argument("--mirror", action="store_true", help="keep Gymnasium's reflective floor")
+    p.add_argument("--size", default="1024x768", help="snapshot size, e.g. 320x240 to see the old blindness")
+    p.add_argument("--sheet", action="store_true", help="show Gemma the 2x2 contact sheet (the old way)")
+    p.add_argument("--out", default="docs/EYETEST.md")
 
     p = sub.add_parser("eval", help="replay recorded runs through each watcher and write EVAL.md")
     p.add_argument("--runs", default="runs/dataset")
@@ -115,9 +131,11 @@ def main(argv: list[str] | None = None) -> None:
     if args.cmd == "train":
         from .train import train
 
-        train(env_id=args.env, steps=args.steps, seed=args.seed, fault_spec=args.fault, name=args.name,
+        fw, fh = (int(x) for x in args.frame_size.lower().split("x"))
+        train(width=fw, height=fh, env_id=args.env, steps=args.steps, seed=args.seed, fault_spec=args.fault, name=args.name,
               runs_dir=args.runs_dir or s.runs_dir, preset=args.preset, frame_every=args.frame_every,
-              eval_steps=args.eval_steps, device=args.device, save_model=args.save_model)
+              eval_steps=args.eval_steps, device=args.device, save_model=args.save_model,
+              threads=args.threads, head_camera=not args.no_head_camera)
         return
 
     if args.cmd == "runs":
@@ -126,10 +144,11 @@ def main(argv: list[str] | None = None) -> None:
         if args.smoke:
             res = run_matrix(args.out if args.out != "runs/dataset" else "runs/smoke", SMOKE_MATRIX,
                              steps=min(args.steps, 60_000), jobs=args.jobs, env_id=args.env,
-                             preset=args.preset, frame_every=10_000, only=args.only)
+                             preset=args.preset, frame_every=10_000, only=args.only, threads=args.threads)
         else:
             res = run_matrix(args.out, DEFAULT_MATRIX, steps=args.steps, jobs=args.jobs, env_id=args.env,
-                             preset=args.preset, frame_every=args.frame_every, only=args.only)
+                             preset=args.preset, frame_every=args.frame_every, only=args.only,
+                             threads=args.threads)
         print(json.dumps(res, indent=2))
         return
 
@@ -143,6 +162,16 @@ def main(argv: list[str] | None = None) -> None:
         from .evaluation.run_eval import look_all
 
         print(json.dumps(look_all(args.runs, s), indent=2))
+        return
+
+    if args.cmd == "eyetest":
+        from .evaluation.eyetest import run_eyetest
+
+        size = tuple(int(x) for x in args.size.lower().split("x"))
+        res = run_eyetest(args.dir, s, args.modes, env_id=args.env, per_class=args.per_class,
+                          mirror=args.mirror, out_md=args.out, size=size, sheet_only=args.sheet)
+        print(json.dumps({m: {k: v for k, v in r.items() if k != "rows"} for m, r in res.items()}, indent=2))
+        print(f"wrote {args.out}")
         return
 
     if args.cmd == "eval":

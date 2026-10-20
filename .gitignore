@@ -12,3 +12,4 @@ models/*.csv
 models/*.tabpfn_fit
 nightwatch.db
 *.log
+MUJOCO_LOG.TXT

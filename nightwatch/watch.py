@@ -51,6 +51,19 @@ def watch_plain(run_dir: str, profile: str, until_ts: float, settings: Settings,
     run_dir = str(Path(run_dir).resolve())
     notifier.send("Night Watch is on", f"Watching {Path(run_dir).name} until "
                   f"{time.strftime('%H:%M', time.localtime(until_ts))} ({profile}). Sleep well.")
+    from .keepawake import keep_awake
+
+    with keep_awake():
+        state = _loop(ctx, notifier, cfg, run_dir, until_ts, every, state)
+    rep = write_morning_report(run_dir, state, client=ctx.client, text_model=settings.text_model,
+                               watch_started=started, watch_ended=time.time(), profile=profile)
+    notifier.send("Night Watch: morning report", rep["summary"], urgent=False, image=rep.get("gif"))
+    print(f"[watch] report: {rep['markdown']}", flush=True)
+    return rep
+
+
+def _loop(ctx: WatchContext, notifier: Notifier, cfg: PolicyConfig, run_dir: str, until_ts: float,
+          every: float, state: PolicyState) -> PolicyState:
     while time.time() < until_ts:
         with tracing.transaction(f"check {Path(run_dir).name}"):
             signals, status, step = ctx.check(run_dir)
@@ -66,8 +79,4 @@ def watch_plain(run_dir: str, profile: str, until_ts: float, settings: Settings,
         if obs.process_alive is False and any(a.kind == "dead" for a in state.wakes):
             break
         time.sleep(max(1.0, min(every, until_ts - time.time())))
-    rep = write_morning_report(run_dir, state, client=ctx.client, text_model=settings.text_model,
-                               watch_started=started, watch_ended=time.time(), profile=profile)
-    notifier.send("Night Watch: morning report", rep["summary"], urgent=False, image=rep.get("gif"))
-    print(f"[watch] report: {rep['markdown']}", flush=True)
-    return rep
+    return state
