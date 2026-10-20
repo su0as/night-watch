@@ -1,5 +1,7 @@
 # Night Watch
 
+[![ci](https://github.com/su0as/night-watch/actions/workflows/ci.yml/badge.svg)](https://github.com/su0as/night-watch/actions/workflows/ci.yml)
+
 **Sleep while your robot learns.** Two open models watch an overnight reinforcement-learning run, and you only get woken when it is worth it.
 
 - **TabPFN** reads the training metrics and compares them with past runs that broke.
@@ -11,8 +13,21 @@ In the morning you get a one-page report: a time-lapse of the night, the reward 
 
 > Built for the DEV x Hacktoberfest 2026 Open-Source AI Challenge, Week 3: *Slow and Steady*. The repository was started and completed during the challenge window (19 to 25 October 2026).
 
-<!-- TODO before publishing: copy runs/<name>/report/timelapse.gif to docs/assets/timelapse.gif and add:
-![time-lapse of a night](docs/assets/timelapse.gif) -->
+### The failure this is built for
+
+This is a real 40k-step smoke run from CI. The reward has a sign bug in a "keep the torso level" term. The reward curve climbs the whole time, from 709 to 1244, and no alert threshold fires:
+
+![reward climbing during the flip-bug run](docs/assets/smoke_flip_reward.png)
+
+Meanwhile, the robot at the start (the reference picture Gemma gets) and at step 40,000:
+
+| step 0 (reference) | step 40,000 |
+|---|---|
+| ![upright](docs/assets/smoke_flip_step0.png) | ![on its back](docs/assets/smoke_flip_step40k.png) |
+
+The simulator agrees: the torso was upside down for 92% of that test episode. The threshold watcher's morning report for this run says "Nothing worth waking you for".
+
+<!-- TODO before publishing: replace with a time-lapse from a real night (runs/<name>/report/timelapse.gif) -->
 
 ## Why
 

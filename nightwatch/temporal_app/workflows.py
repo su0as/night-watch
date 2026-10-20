@@ -99,13 +99,16 @@ class NightWatch:
 
             if self._status in ("finished", "error"):
                 break
-            checks_this_history += 1
-            if checks_this_history >= p.checks_per_history:
-                workflow.continue_as_new(dataclasses.replace(p, state=self._state, started_ts=started))
             try:
                 await workflow.wait_condition(lambda: self._stop, timeout=timedelta(seconds=p.check_every_s))
             except asyncio.TimeoutError:
                 pass
+            # Roll over to a fresh history *after* the wait, so the new run checks on schedule
+            # instead of immediately (which would add an extra check per rollover).
+            checks_this_history += 1
+            if (checks_this_history >= p.checks_per_history and not self._stop
+                    and workflow.now().timestamp() < p.until_ts):
+                workflow.continue_as_new(dataclasses.replace(p, state=self._state, started_ts=started))
 
         rep = await workflow.execute_activity(
             "write_report",

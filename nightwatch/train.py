@@ -84,6 +84,20 @@ class RewardBugWrapper(gym.Wrapper):
         return obs, reward, terminated, truncated, info
 
 
+CAMERA_DISTANCE = {"HalfCheetah": 3.0, "Hopper": 3.5, "Walker2d": 4.0, "Ant": 5.0, "Humanoid": 4.5}
+
+
+def camera_config(env_id: str) -> dict:
+    """A camera that follows the torso from the side.
+
+    Gymnasium's default for these robots is a *fixed* free camera, so once the robot learns
+    to run it leaves the frame within one test episode and the watcher sees an empty floor.
+    type=2 is mjCAMERA_TRACKING; body 1 is the torso/root in all of these models.
+    """
+    dist = next((d for k, d in CAMERA_DISTANCE.items() if env_id.startswith(k)), 4.0)
+    return {"type": 2, "trackbodyid": 1, "distance": dist, "elevation": -12.0, "azimuth": 90.0}
+
+
 def sim_warnings(unwrapped) -> int:
     try:
         return int(sum(int(w.number) for w in unwrapped.data.warning))
@@ -324,7 +338,8 @@ def train(env_id: str = "HalfCheetah-v5", steps: int = 400_000, seed: int = 1,
 
     venv = VecNormalize(DummyVecEnv([make_train_env]), norm_obs=True, norm_reward=True)
     venv.seed(seed)
-    eval_env = RewardBugWrapper(gym.make(env_id, render_mode="rgb_array", width=width, height=height),
+    eval_env = RewardBugWrapper(gym.make(env_id, render_mode="rgb_array", width=width, height=height,
+                                         default_camera_config=camera_config(env_id)),
                                 env_id, fault, clock)
 
     model = PPO("MlpPolicy", venv, seed=seed, device=device, verbose=0, **ppo_preset(preset))
