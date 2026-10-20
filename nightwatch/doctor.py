@@ -73,10 +73,17 @@ def run(settings: Settings, render: bool = True) -> int:
             else:
                 failures += 1
                 _bad(f"{model} not pulled", f"ollama pull {model}")
-        mode = "thinks before answering" if settings.vision_think else "answers straight away"
-        _ok(f"vision judge {mode}, {settings.vision_snapshots} snapshot(s) at up to {settings.vision_max_side} px; "
-            "check its eyesight with: python -m nightwatch eyetest")
-        if settings.vision_max_side < 800 or settings.vision_snapshots == 0:
+        if settings.vision_view == "head":
+            _ok("vision judge uses the head camera (where are the floor and the sky?); "
+                "check its eyesight with: python -m nightwatch eyetest")
+            if "e2b" in settings.vision_model:
+                _warn("gemma4:e2b caught 0 of 6 upside-down robots in our eyetest, even with the head camera; "
+                      "use gemma4:e4b-it-qat")
+        else:
+            mode = "thinks before answering" if settings.vision_think else "answers straight away"
+            _warn(f"vision judge uses the side camera ({mode}): Gemma 4 E4B could not tell upright from upside "
+                  "down that way in our eyetest. Set NW_VISION_VIEW=head")
+        if settings.vision_view != "head" and (settings.vision_max_side < 800 or settings.vision_snapshots == 0):
             _warn("small pictures blind Gemma: Ollama gives it ~1 image token per 48x48 px. In our eyetest a "
                   "320x240 snapshot got the same answer whatever the robot was doing")
     except Exception as exc:  # noqa: BLE001

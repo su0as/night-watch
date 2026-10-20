@@ -11,10 +11,20 @@ Title options (pick one after you see the results):
 4. Night Watch: TabPFN reads my training logs, Gemma watches my robot, and I sleep
 
 VERIFIED on the Windows laptop (i7-1165G7, 16 GB, Iris Xe), 20 Oct 2026. You can quote these:
-- docs/EYETEST.md: gemma4:e4b-it-qat, 12 controlled test episodes (6 upright, 6 upside down).
-  Side camera: 6/12 right, 0/6 upside-down caught (it said "upright" every time), both as a 2x2 sheet
-  of 320x240 snapshots and as full 1024x768 snapshots. Head camera: 12/12, 6/6, 48/48 floor answers right,
-  ~19 s per test episode (4 looks of ~5 s on the iGPU).
+- docs/EYETEST.md: gemma4:e4b-it-qat. 18 controlled test episodes (6 upright, 6 upside down, 6 crouching).
+  Side camera full-size: 12/18 right, 0/6 upside-down caught (it said "upright" every time). Side camera
+  2x2 sheet of 320x240 (first version, 12-episode set): 6/12, 0/6. Head camera: 18/18, 6/6, ~25 s per test
+  episode (4 looks of ~6 s on the iGPU). gemma4:e2b-it-qat with the head camera: 12/18, 0/6 (said upright
+  every time), so E4B is the smallest that works.
+- Smoke eval on the laptop (docs/EVAL_smoke.md, 4 runs x 60k steps, real TabPFN-3.5 + Gemma): Gemma on
+  its own per test episode: 6 TP, 0 FP, 0 FN, 17 TN. Full watcher caught 3/3 failures, median 0.3 min.
+  TabPFN on 3 training runs: AUROC 0.42 and 1 false wake (too little data; the 12-run dataset is the test).
+- Real Temporal run on the laptop (docs/assets/laptop_flip_*): flip-bug, 600k steps, checks every 60 s.
+  Reward 908 -> 3525. Woke at 00:38 (step 100k): Gemma "upside down, floor/sky top/bottom x4" and TabPFN
+  p=0.86. Worker killed 00:42:00; the server's timer fired 00:42:15 with no worker; workflow task timed
+  out and waited 3 min 50 s; worker back 00:46:15, carried on; same problem at 00:46 went to the morning
+  notes (suppressed, not a second wake); run finished 00:48, report + alert 00:49:18. TabPFN live check
+  0.3-0.5 s (fit_with_cache), Gemma head-camera check 45-65 s.
 - Also tried and failed from the side: other wordings ("what touches the floor", "is the body above the
   feet"), a reference picture, bigger pictures, thinking mode (6 minutes per look on the laptop, still
   wrong on upside-down), gemma4:12b (does not fit the iGPU: ErrorOutOfDeviceMemory).
@@ -127,10 +137,10 @@ Then I thought about it like a robotics problem instead of a prompt problem. A r
 | what Gemma is shown | right calls | upside-down robots caught | seconds per test episode |
 |---|---|---|---|
 | side camera, 2x2 sheet (my first version) | 6 / 12 | 0 / 6 | 10 |
-| side camera, full-size snapshots | 6 / 12 | 0 / 6 | 19 |
-| head camera | **12 / 12** | **6 / 6** | 19 |
+| side camera, full-size snapshots | 12 / 18 | 0 / 6 | 22 |
+| head camera | **18 / 18** | **6 / 6** | 25 |
 
-Gemma answers one question per head-camera snapshot, in a fixed JSON schema (floor in the bottom half, top half, a side, or not visible). **Plain code** turns the four answers into a posture: floor mostly on top means upside down, floor jumping between top and bottom means spinning. Gemma never decides to wake me; it only reports what it sees, and it has to be the same two test episodes in a row.
+Gemma answers one question per head-camera snapshot, in a fixed JSON schema: where are the floor and the sky? **Plain code** turns the four answers into a posture: the sky below the floor means upside down, the picture flipping back and forth means spinning. Gemma never decides to wake me; it only reports what it sees, and it has to be the same two test episodes in a row.
 
 [[One or two real examples from docs/EVAL.json vision_rows on your real runs: what it said for a flipped run, and anything it got wrong]]
 
@@ -146,7 +156,7 @@ NaN in the log, no new metrics for 6x the usual interval (minimum 10 minutes), o
 
 The watch is a Temporal workflow: check, decide, maybe alert, then wait 5 minutes (a durable timer), and repeat until 07:30. The checks are activities with retries; Gemma loading slowly or Ollama restarting is just a retry. Every 150 checks it continues as new, carrying its state (who woke me, when).
 
-The test that matters: around midnight I closed the worker window. The training kept running, and the workflow sat on the server as "Running" with nobody executing it. [[N]] minutes later I started the worker again and it carried on from its last check, still knowing it had already woken me [[N]] times.
+The test that matters: I killed the worker mid-watch. The training kept running, and the workflow sat on the server as "Running" with nobody executing it; its one-minute timer even fired on schedule, with no worker to hand the next check to. [[N, from your real night; the laptop test was 3 min 50 s]] minutes later I started the worker again and it carried on from its last check, still knowing it had already woken me [[N]] times: the same problem a few minutes later went into the morning notes instead of waking me twice.
 
 ![Temporal UI around the gap]([[screenshot]])
 

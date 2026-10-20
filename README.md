@@ -15,19 +15,23 @@ In the morning you get a one-page report: a time-lapse of the night, the reward 
 
 ### The failure this is built for
 
-This is a real 40k-step smoke run from CI. The reward has a sign bug in a "keep the torso level" term. The reward curve climbs the whole time, from 709 to 1244, and no alert threshold fires:
+A real 600k-step run on a Windows laptop (i7-1165G7, no NVIDIA GPU), watched by the Temporal workflow with all four watchers. The reward has a sign bug in a "keep the torso level" term. The reward climbs the whole time, from 908 to 3,525, and no alert threshold fires. Red lines are where Night Watch woke me (step 100k, two minutes into the run); amber ones are morning notes:
 
-![reward climbing during the flip-bug run](docs/assets/smoke_flip_reward.png)
+![reward climbing during the flip-bug run](docs/assets/laptop_flip_reward.png)
 
-Meanwhile, the robot at the start (the reference picture Gemma gets) and at step 40,000:
+Meanwhile, the robot at the start and at step 100,000:
 
-| step 0 (reference) | step 40,000 |
+| step 0 | step 100,000 |
 |---|---|
-| ![upright](docs/assets/smoke_flip_step0.png) | ![on its back](docs/assets/smoke_flip_step40k.png) |
+| ![upright](docs/assets/laptop_flip_step0.png) | ![on its back](docs/assets/laptop_flip_step100k.png) |
 
-The simulator agrees: the torso was upside down for 92% of that test episode. The threshold watcher's morning report for this run says "Nothing worth waking you for".
+What woke me, from the [morning report](docs/assets/laptop_flip_morning.md):
 
-<!-- TODO before publishing: replace with a time-lapse from a real night (runs/<name>/report/timelapse.gif) -->
+> **00:38** step 100,000 [vision/robot_looks_wrong] The robot looks wrong in the last 2 test runs: posture=upside_down. Gemma: "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+>
+> **00:38** step 106,496 [tabpfn/metrics_anomaly] Training metrics look like past runs that broke (p=0.86).
+
+Halfway through, I killed the Temporal worker for four minutes. The durable timer still fired on the server, the workflow waited, and when the worker came back it carried on from its last check, without waking me a second time for the same problem.
 
 ## Why
 
@@ -47,8 +51,11 @@ The first version showed Gemma 4 E4B the usual side view. A controlled test (`py
 | what Gemma is shown | right calls | upside-down robots caught | seconds per test episode (laptop iGPU) |
 |---|---|---|---|
 | side camera, 2x2 sheet of 320x240 snapshots (first version) | 6 / 12 | 0 / 6 | 10 |
-| side camera, full-size 1024x768 snapshots | 6 / 12 | 0 / 6 | 19 |
-| **head camera, 4 snapshots at 512x384** | **12 / 12** | **6 / 6** | 19 |
+| side camera, full-size 1024x768 snapshots | 12 / 18 | 0 / 6 | 22 |
+| **head camera, 4 snapshots at 512x384** | **18 / 18** | **6 / 6** | 25 |
+| head camera, smaller `gemma4:e2b-it-qat` | 12 / 18 | 0 / 6 | 18 |
+
+(18 test episodes: 6 upright, 6 upside down, 6 crouching nose-down or rearing up, which count as upright. The first version was tested on the 12 without crouches.)
 
 Full table: [docs/EYETEST.md](docs/EYETEST.md).
 
