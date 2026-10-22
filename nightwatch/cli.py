@@ -42,6 +42,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--frame-size", default="1024x768",
                    help="snapshot size. Gemma gets ~1 image token per 48x48 px, so small frames blind it")
     p.add_argument("--no-head-camera", action="store_true", help="side camera only (Gemma cannot judge posture then)")
+    p.add_argument("--shaping", default="none", choices=["none", "level"],
+                   help="level = the correct 'keep the torso level' reward term (the flip bug is its sign flipped)")
+    p.add_argument("--shaping-weight", type=float, default=1.0)
     p.add_argument("--save-model", action="store_true")
 
     p = sub.add_parser("runs", help="record the evaluation runs (healthy + broken), several at once")
@@ -52,6 +55,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--preset", default="fast", choices=["fast", "zoo"])
     p.add_argument("--frame-every", type=int, default=20_000)
     p.add_argument("--smoke", action="store_true", help="4 tiny runs to check the pipeline end to end")
+    p.add_argument("--matrix", default="clean", choices=["clean", "vanilla"],
+                   help="clean: unique seeds, level shaping on healthy/fault runs (default). vanilla: the first set")
     p.add_argument("--only", nargs="*", default=None)
     p.add_argument("--threads", type=int, default=None,
                    help="torch threads per run (default: CPU cores / jobs, at least 1)")
@@ -136,18 +141,19 @@ def main(argv: list[str] | None = None) -> None:
         train(width=fw, height=fh, env_id=args.env, steps=args.steps, seed=args.seed, fault_spec=args.fault, name=args.name,
               runs_dir=args.runs_dir or s.runs_dir, preset=args.preset, frame_every=args.frame_every,
               eval_steps=args.eval_steps, device=args.device, save_model=args.save_model,
-              threads=args.threads, head_camera=not args.no_head_camera)
+              threads=args.threads, head_camera=not args.no_head_camera, shaping=args.shaping,
+              shaping_weight=args.shaping_weight)
         return
 
     if args.cmd == "runs":
-        from .experiments import DEFAULT_MATRIX, SMOKE_MATRIX, run_matrix
+        from .experiments import CLEAN_MATRIX, DEFAULT_MATRIX, SMOKE_MATRIX, run_matrix
 
         if args.smoke:
             res = run_matrix(args.out if args.out != "runs/dataset" else "runs/smoke", SMOKE_MATRIX,
                              steps=min(args.steps, 60_000), jobs=args.jobs, env_id=args.env,
                              preset=args.preset, frame_every=10_000, only=args.only, threads=args.threads)
         else:
-            res = run_matrix(args.out, DEFAULT_MATRIX, steps=args.steps, jobs=args.jobs, env_id=args.env,
+            res = run_matrix(args.out, CLEAN_MATRIX if args.matrix == "clean" else DEFAULT_MATRIX, steps=args.steps, jobs=args.jobs, env_id=args.env,
                              preset=args.preset, frame_every=args.frame_every, only=args.only,
                              threads=args.threads)
         print(json.dumps(res, indent=2))

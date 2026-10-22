@@ -1,0 +1,2983 @@
+{
+  "summary": [
+    {
+      "profile": "thresholds",
+      "failures": 11,
+      "caught": 6,
+      "median_minutes": 4.2,
+      "false_wakes": 0,
+      "clean_runs": 1,
+      "false_wakes_clean": 0,
+      "hours": 1.52,
+      "false_per_8h": 0.0
+    },
+    {
+      "profile": "tabpfn",
+      "failures": 11,
+      "caught": 10,
+      "median_minutes": 0.1,
+      "false_wakes": 1,
+      "clean_runs": 1,
+      "false_wakes_clean": 1,
+      "hours": 1.52,
+      "false_per_8h": 5.26
+    },
+    {
+      "profile": "vision",
+      "failures": 11,
+      "caught": 11,
+      "median_minutes": 0.4,
+      "false_wakes": 0,
+      "clean_runs": 1,
+      "false_wakes_clean": 0,
+      "hours": 1.52,
+      "false_per_8h": 0.0
+    },
+    {
+      "profile": "nightwatch",
+      "failures": 11,
+      "caught": 11,
+      "median_minutes": 0.1,
+      "false_wakes": 1,
+      "clean_runs": 1,
+      "false_wakes_clean": 1,
+      "hours": 1.52,
+      "false_per_8h": 5.26
+    }
+  ],
+  "scores": [
+    {
+      "run_id": "crash-s1",
+      "profile": "thresholds",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 14.6,
+      "steps_to_wake": 129856,
+      "first_wake_source": "rules/stalled",
+      "false_wakes": 0,
+      "hours": 0.08536124699645573,
+      "wake_kinds": [
+        "rules/stalled"
+      ]
+    },
+    {
+      "run_id": "flip-s1",
+      "profile": "thresholds",
+      "failure_kind": "flipped",
+      "caught": false,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.14107409867975446,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "flip-s2",
+      "profile": "thresholds",
+      "failure_kind": "flipped",
+      "caught": false,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.14056018074353535,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "healthy-s1",
+      "profile": "thresholds",
+      "failure_kind": "flipped",
+      "caught": false,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.1289329942729738,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "healthy-s2",
+      "profile": "thresholds",
+      "failure_kind": "flipped",
+      "caught": false,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.1283164111110899,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "healthy-s3",
+      "profile": "thresholds",
+      "failure_kind": "none",
+      "caught": null,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.12843486726284026,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "healthy-s4",
+      "profile": "thresholds",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 5.9,
+      "steps_to_wake": 288640,
+      "first_wake_source": "thresholds/kl_spike",
+      "false_wakes": 0,
+      "hours": 0.13717416849401262,
+      "wake_kinds": [
+        "thresholds/kl_spike"
+      ]
+    },
+    {
+      "run_id": "lr-s1",
+      "profile": "thresholds",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 1.7,
+      "steps_to_wake": 82752,
+      "first_wake_source": "thresholds/kl_spike",
+      "false_wakes": 0,
+      "hours": 0.13866811679469215,
+      "wake_kinds": [
+        "thresholds/kl_spike",
+        "thresholds/value_loss_spike",
+        "thresholds/ev_collapse"
+      ]
+    },
+    {
+      "run_id": "lr-s2",
+      "profile": "thresholds",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 2.3,
+      "steps_to_wake": 113600,
+      "first_wake_source": "thresholds/kl_spike",
+      "false_wakes": 0,
+      "hours": 0.13876393424140082,
+      "wake_kinds": [
+        "thresholds/kl_spike",
+        "thresholds/value_loss_spike",
+        "thresholds/ev_collapse"
+      ]
+    },
+    {
+      "run_id": "physics-s1",
+      "profile": "thresholds",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 2.5,
+      "steps_to_wake": 123712,
+      "first_wake_source": "thresholds/ev_collapse",
+      "false_wakes": 0,
+      "hours": 0.12538567609257167,
+      "wake_kinds": [
+        "thresholds/ev_collapse",
+        "thresholds/reward_drop"
+      ]
+    },
+    {
+      "run_id": "spin-s1",
+      "profile": "thresholds",
+      "failure_kind": "flipped",
+      "caught": false,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.13942315684424506,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "stall-s1",
+      "profile": "thresholds",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 14.6,
+      "steps_to_wake": 129856,
+      "first_wake_source": "rules/stalled",
+      "false_wakes": 0,
+      "hours": 0.08538539475864834,
+      "wake_kinds": [
+        "rules/stalled"
+      ]
+    },
+    {
+      "run_id": "crash-s1",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 2880,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.08536124699645573,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "rules/stalled",
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "flip-s1",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.2,
+      "steps_to_wake": 11200,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.14107409867975446,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "flip-s2",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 7104,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.14056018074353535,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "healthy-s1",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.0,
+      "steps_to_wake": 2880,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.1289329942729738,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "healthy-s2",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 3008,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.1283164111110899,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "healthy-s3",
+      "profile": "tabpfn",
+      "failure_kind": "none",
+      "caught": null,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 1,
+      "hours": 0.12843486726284026,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "healthy-s4",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 1.0,
+      "steps_to_wake": 49024,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.13717416849401262,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "lr-s1",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 2880,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.13866811679469215,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "lr-s2",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.2,
+      "steps_to_wake": 9152,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.13876393424140082,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "physics-s1",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 2880,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.12538567609257167,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "spin-s1",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": false,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.13942315684424506,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "stall-s1",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 2880,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.08538539475864834,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "rules/stalled",
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "crash-s1",
+      "profile": "vision",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.4,
+      "steps_to_wake": 20000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.08536124699645573,
+      "wake_kinds": [
+        "vision/robot_looks_wrong",
+        "rules/stalled",
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "flip-s1",
+      "profile": "vision",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.4,
+      "steps_to_wake": 20000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.14107409867975446,
+      "wake_kinds": [
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "flip-s2",
+      "profile": "vision",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.4,
+      "steps_to_wake": 20000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.14056018074353535,
+      "wake_kinds": [
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "healthy-s1",
+      "profile": "vision",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.4,
+      "steps_to_wake": 20000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.1289329942729738,
+      "wake_kinds": [
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "healthy-s2",
+      "profile": "vision",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.4,
+      "steps_to_wake": 20000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.1283164111110899,
+      "wake_kinds": [
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "healthy-s3",
+      "profile": "vision",
+      "failure_kind": "none",
+      "caught": null,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.12843486726284026,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "healthy-s4",
+      "profile": "vision",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.4,
+      "steps_to_wake": 20000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.13717416849401262,
+      "wake_kinds": [
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "lr-s1",
+      "profile": "vision",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.4,
+      "steps_to_wake": 20000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.13866811679469215,
+      "wake_kinds": [
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "lr-s2",
+      "profile": "vision",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.4,
+      "steps_to_wake": 20000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.13876393424140082,
+      "wake_kinds": [
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "physics-s1",
+      "profile": "vision",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.4,
+      "steps_to_wake": 20000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.12538567609257167,
+      "wake_kinds": [
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "spin-s1",
+      "profile": "vision",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.0,
+      "steps_to_wake": 0,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.13942315684424506,
+      "wake_kinds": [
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "stall-s1",
+      "profile": "vision",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.4,
+      "steps_to_wake": 20000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.08538539475864834,
+      "wake_kinds": [
+        "vision/robot_looks_wrong",
+        "rules/stalled",
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "crash-s1",
+      "profile": "nightwatch",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 2880,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.08536124699645573,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "vision/robot_looks_wrong",
+        "rules/stalled"
+      ]
+    },
+    {
+      "run_id": "flip-s1",
+      "profile": "nightwatch",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.2,
+      "steps_to_wake": 11200,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.14107409867975446,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "flip-s2",
+      "profile": "nightwatch",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 7104,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.14056018074353535,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "healthy-s1",
+      "profile": "nightwatch",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.0,
+      "steps_to_wake": 2880,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.1289329942729738,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "healthy-s2",
+      "profile": "nightwatch",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 3008,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.1283164111110899,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "healthy-s3",
+      "profile": "nightwatch",
+      "failure_kind": "none",
+      "caught": null,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 1,
+      "hours": 0.12843486726284026,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "healthy-s4",
+      "profile": "nightwatch",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.4,
+      "steps_to_wake": 20000,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.13717416849401262,
+      "wake_kinds": [
+        "vision/robot_looks_wrong",
+        "tabpfn/metrics_anomaly",
+        "thresholds/kl_spike"
+      ]
+    },
+    {
+      "run_id": "lr-s1",
+      "profile": "nightwatch",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 2880,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.13866811679469215,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "vision/robot_looks_wrong",
+        "thresholds/kl_spike"
+      ]
+    },
+    {
+      "run_id": "lr-s2",
+      "profile": "nightwatch",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.2,
+      "steps_to_wake": 9152,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.13876393424140082,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "vision/robot_looks_wrong",
+        "thresholds/kl_spike"
+      ]
+    },
+    {
+      "run_id": "physics-s1",
+      "profile": "nightwatch",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 2880,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.12538567609257167,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "vision/robot_looks_wrong",
+        "thresholds/ev_collapse"
+      ]
+    },
+    {
+      "run_id": "spin-s1",
+      "profile": "nightwatch",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.0,
+      "steps_to_wake": 0,
+      "first_wake_source": "vision/robot_looks_wrong",
+      "false_wakes": 0,
+      "hours": 0.13942315684424506,
+      "wake_kinds": [
+        "vision/robot_looks_wrong"
+      ]
+    },
+    {
+      "run_id": "stall-s1",
+      "profile": "nightwatch",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 2880,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.08538539475864834,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "vision/robot_looks_wrong",
+        "rules/stalled"
+      ]
+    }
+  ],
+  "tabpfn": {
+    "backend": "tabpfn-local-v3.5",
+    "windows": 2144,
+    "positives": 1564,
+    "auroc": 0.879,
+    "seconds": 764.9,
+    "features": 22
+  },
+  "vision": {
+    "tp": 125,
+    "fp": 18,
+    "fn": 2,
+    "tn": 89,
+    "unjudged": 0,
+    "precision": 0.874,
+    "recall": 0.984,
+    "median_latency_s": 22.13,
+    "median_tokens": 872
+  },
+  "vision_rows": [
+    {
+      "run": "crash-s1",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "crash-s1",
+      "step": 40000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, bottom/not_visible, not_visible/not_visible, top/not_visible"
+    },
+    {
+      "run": "crash-s1",
+      "step": 60000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/not_visible, top/not_visible, top/not_visible"
+    },
+    {
+      "run": "crash-s1",
+      "step": 80000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/not_visible, top/not_visible, top/not_visible, top/bottom"
+    },
+    {
+      "run": "crash-s1",
+      "step": 100000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "crash-s1",
+      "step": 120000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "crash-s1",
+      "step": 140000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "crash-s1",
+      "step": 160000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "crash-s1",
+      "step": 180000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "crash-s1",
+      "step": 200000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "crash-s1",
+      "step": 220000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "crash-s1",
+      "step": 240000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "flip-s1",
+      "step": 40000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 60000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 80000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 100000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 120000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 140000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 160000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 180000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 200000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 220000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 240000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 260000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 280000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 300000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 320000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 340000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 360000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 380000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 400000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s1",
+      "step": 401408,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "flip-s2",
+      "step": 40000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 60000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 80000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 100000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 120000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 140000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 160000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 180000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 200000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 220000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 240000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 260000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 280000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 300000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 320000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 340000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 360000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 380000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "flip-s2",
+      "step": 400000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, not_visible/not_visible"
+    },
+    {
+      "run": "flip-s2",
+      "step": 401408,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 40000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, bottom/not_visible, not_visible/not_visible, top/not_visible"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 60000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/not_visible, top/not_visible, top/not_visible"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 80000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/not_visible, top/not_visible, top/not_visible, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 100000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 120000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 140000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 160000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 180000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 200000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 220000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 240000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 260000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 280000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 300000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 320000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 340000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 360000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 380000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 400000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s1",
+      "step": 401408,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 40000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 60000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 80000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 100000,
+      "truth": "ok",
+      "posture": "mid_flip",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: top/not_visible, not_visible/not_visible, top/bottom, bottom/top"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 120000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 140000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 160000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 180000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 200000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 220000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 240000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 260000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 280000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 300000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 320000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 340000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 360000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 380000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 400000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s2",
+      "step": 401408,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 40000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 60000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 80000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 100000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 120000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 140000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 160000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 180000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 200000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 220000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 240000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 260000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 280000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 300000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 320000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 340000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 360000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 380000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 400000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s3",
+      "step": 401408,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 40000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: top/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 60000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: top/not_visible, top/not_visible, top/not_visible, top/not_visible"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 80000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 100000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 120000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 140000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: bottom/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 160000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 180000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 200000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 220000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 240000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 260000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 280000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 300000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 320000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 340000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 360000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 380000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 400000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "healthy-s4",
+      "step": 401408,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s1",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s1",
+      "step": 40000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, bottom/not_visible, not_visible/not_visible, top/not_visible"
+    },
+    {
+      "run": "lr-s1",
+      "step": 60000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/not_visible, top/not_visible, top/not_visible"
+    },
+    {
+      "run": "lr-s1",
+      "step": 80000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/not_visible, top/not_visible, top/not_visible, top/bottom"
+    },
+    {
+      "run": "lr-s1",
+      "step": 100000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "lr-s1",
+      "step": 120000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s1",
+      "step": 140000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s1",
+      "step": 160000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s1",
+      "step": 180000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s1",
+      "step": 200000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s1",
+      "step": 220000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s1",
+      "step": 240000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s1",
+      "step": 260000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: top/top, top/top, top/top, top/top"
+    },
+    {
+      "run": "lr-s1",
+      "step": 280000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s1",
+      "step": 300000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/bottom, top/bottom, not_visible/not_visible"
+    },
+    {
+      "run": "lr-s1",
+      "step": 320000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s1",
+      "step": 340000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/not_visible, top/not_visible, top/not_visible"
+    },
+    {
+      "run": "lr-s1",
+      "step": 360000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s1",
+      "step": 380000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s1",
+      "step": 400000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s1",
+      "step": 401408,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: bottom/not_visible, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s2",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s2",
+      "step": 40000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s2",
+      "step": 60000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s2",
+      "step": 80000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s2",
+      "step": 100000,
+      "truth": "ok",
+      "posture": "mid_flip",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: top/not_visible, not_visible/not_visible, top/bottom, bottom/top"
+    },
+    {
+      "run": "lr-s2",
+      "step": 120000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "lr-s2",
+      "step": 140000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s2",
+      "step": 160000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: top/not_visible, top/not_visible, top/not_visible, top/not_visible"
+    },
+    {
+      "run": "lr-s2",
+      "step": 180000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s2",
+      "step": 200000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "lr-s2",
+      "step": 220000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s2",
+      "step": 240000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s2",
+      "step": 260000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s2",
+      "step": 280000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s2",
+      "step": 300000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s2",
+      "step": 320000,
+      "truth": "ok",
+      "posture": "mid_flip",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, bottom/top, not_visible/not_visible, top/bottom"
+    },
+    {
+      "run": "lr-s2",
+      "step": 340000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "lr-s2",
+      "step": 360000,
+      "truth": "ok",
+      "posture": "mid_flip",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s2",
+      "step": 380000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s2",
+      "step": 400000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "lr-s2",
+      "step": 401408,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "physics-s1",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "physics-s1",
+      "step": 40000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, bottom/not_visible, not_visible/not_visible, top/not_visible"
+    },
+    {
+      "run": "physics-s1",
+      "step": 60000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/not_visible, top/not_visible, top/not_visible"
+    },
+    {
+      "run": "physics-s1",
+      "step": 80000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/not_visible, top/not_visible, top/not_visible, top/bottom"
+    },
+    {
+      "run": "physics-s1",
+      "step": 100000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "physics-s1",
+      "step": 120000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "physics-s1",
+      "step": 140000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "physics-s1",
+      "step": 160000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "physics-s1",
+      "step": 180000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "physics-s1",
+      "step": 200000,
+      "truth": "exploded",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, bottom/top, top/bottom, top/bottom"
+    },
+    {
+      "run": "physics-s1",
+      "step": 220000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "physics-s1",
+      "step": 240000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "physics-s1",
+      "step": 260000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "physics-s1",
+      "step": 280000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "physics-s1",
+      "step": 300000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "physics-s1",
+      "step": 320000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "physics-s1",
+      "step": 340000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "physics-s1",
+      "step": 360000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "physics-s1",
+      "step": 380000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "physics-s1",
+      "step": 400000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "physics-s1",
+      "step": 401408,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "spin-s1",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "spin-s1",
+      "step": 40000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/not_visible, not_visible/not_visible, top/not_visible"
+    },
+    {
+      "run": "spin-s1",
+      "step": 60000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, bottom/top, not_visible/not_visible"
+    },
+    {
+      "run": "spin-s1",
+      "step": 80000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, not_visible/not_visible"
+    },
+    {
+      "run": "spin-s1",
+      "step": 100000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "spin-s1",
+      "step": 120000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: bottom/top, not_visible/not_visible, top/bottom, top/bottom"
+    },
+    {
+      "run": "spin-s1",
+      "step": 140000,
+      "truth": "ok",
+      "posture": "mid_flip",
+      "motion": "spinning",
+      "wrong": true,
+      "why": "head camera, floor/sky: bottom/not_visible, top/bottom, bottom/top, top/bottom"
+    },
+    {
+      "run": "spin-s1",
+      "step": 160000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "spinning",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/bottom, bottom/top, top/bottom"
+    },
+    {
+      "run": "spin-s1",
+      "step": 180000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, bottom/not_visible, bottom/top"
+    },
+    {
+      "run": "spin-s1",
+      "step": 200000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "spin-s1",
+      "step": 220000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, bottom/top, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "spin-s1",
+      "step": 240000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "spin-s1",
+      "step": 260000,
+      "truth": "flipped",
+      "posture": "mid_flip",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, not_visible/not_visible, top/bottom, not_visible/not_visible"
+    },
+    {
+      "run": "spin-s1",
+      "step": 280000,
+      "truth": "ok",
+      "posture": "mid_flip",
+      "motion": "spinning",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, bottom/top, top/bottom, bottom/not_visible"
+    },
+    {
+      "run": "spin-s1",
+      "step": 300000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, not_visible/not_visible, top/bottom"
+    },
+    {
+      "run": "spin-s1",
+      "step": 320000,
+      "truth": "flipped",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "spin-s1",
+      "step": 340000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/not_visible, not_visible/not_visible, not_visible/not_visible, top/bottom"
+    },
+    {
+      "run": "spin-s1",
+      "step": 360000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, bottom/not_visible"
+    },
+    {
+      "run": "spin-s1",
+      "step": 380000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, bottom/top, top/bottom, top/bottom"
+    },
+    {
+      "run": "spin-s1",
+      "step": 400000,
+      "truth": "ok",
+      "posture": "mid_flip",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, bottom/top, top/bottom, not_visible/not_visible"
+    },
+    {
+      "run": "spin-s1",
+      "step": 401408,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, not_visible/not_visible, bottom/top, not_visible/not_visible"
+    },
+    {
+      "run": "stall-s1",
+      "step": 20000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: bottom/top, bottom/top, bottom/top, bottom/top"
+    },
+    {
+      "run": "stall-s1",
+      "step": 40000,
+      "truth": "ok",
+      "posture": "upright",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, bottom/not_visible, not_visible/not_visible, top/not_visible"
+    },
+    {
+      "run": "stall-s1",
+      "step": 60000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/not_visible, top/not_visible, top/not_visible"
+    },
+    {
+      "run": "stall-s1",
+      "step": 80000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/not_visible, top/not_visible, top/not_visible, top/bottom"
+    },
+    {
+      "run": "stall-s1",
+      "step": 100000,
+      "truth": "ok",
+      "posture": "unclear",
+      "motion": "unclear",
+      "wrong": false,
+      "why": "head camera, floor/sky: not_visible/not_visible, not_visible/not_visible, not_visible/not_visible, not_visible/not_visible"
+    },
+    {
+      "run": "stall-s1",
+      "step": 120000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: not_visible/not_visible, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "stall-s1",
+      "step": 140000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "stall-s1",
+      "step": 160000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "stall-s1",
+      "step": 180000,
+      "truth": "ok",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "stall-s1",
+      "step": 200000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "stall-s1",
+      "step": 220000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    },
+    {
+      "run": "stall-s1",
+      "step": 240000,
+      "truth": "flipped",
+      "posture": "upside_down",
+      "motion": "unclear",
+      "wrong": true,
+      "why": "head camera, floor/sky: top/bottom, top/bottom, top/bottom, top/bottom"
+    }
+  ],
+  "failures": {
+    "crash-s1": [
+      {
+        "kind": "flipped",
+        "onset_step": 120000,
+        "onset_t": 1792517182.0967739,
+        "source": "behaviour"
+      },
+      {
+        "kind": "crash",
+        "onset_step": 250000,
+        "onset_t": 1792517340.5177264,
+        "source": "injected"
+      }
+    ],
+    "flip-s1": [
+      {
+        "kind": "flipped",
+        "onset_step": 40000,
+        "onset_t": 1792516063.5010464,
+        "source": "behaviour"
+      }
+    ],
+    "flip-s2": [
+      {
+        "kind": "flipped",
+        "onset_step": 40000,
+        "onset_t": 1792516063.1447372,
+        "source": "behaviour"
+      }
+    ],
+    "healthy-s1": [
+      {
+        "kind": "flipped",
+        "onset_step": 120000,
+        "onset_t": 1792515678.0699828,
+        "source": "behaviour"
+      }
+    ],
+    "healthy-s2": [
+      {
+        "kind": "flipped",
+        "onset_step": 40000,
+        "onset_t": 1792515588.021688,
+        "source": "behaviour"
+      }
+    ],
+    "healthy-s3": [],
+    "healthy-s4": [
+      {
+        "kind": "flipped",
+        "onset_step": 80000,
+        "onset_t": 1792516103.258018,
+        "source": "behaviour"
+      }
+    ],
+    "lr-s1": [
+      {
+        "kind": "flipped",
+        "onset_step": 120000,
+        "onset_t": 1792516670.6478236,
+        "source": "behaviour"
+      },
+      {
+        "kind": "lr_blowup",
+        "onset_step": 200000,
+        "onset_t": 1792516769.2706852,
+        "source": "injected"
+      }
+    ],
+    "lr-s2": [
+      {
+        "kind": "flipped",
+        "onset_step": 40000,
+        "onset_t": 1792516577.8081994,
+        "source": "behaviour"
+      },
+      {
+        "kind": "lr_blowup",
+        "onset_step": 150000,
+        "onset_t": 1792516714.0538576,
+        "source": "injected"
+      }
+    ],
+    "physics-s1": [
+      {
+        "kind": "flipped",
+        "onset_step": 120000,
+        "onset_t": 1792517161.8650644,
+        "source": "behaviour"
+      },
+      {
+        "kind": "physics_blowup",
+        "onset_step": 200000,
+        "onset_t": 1792517258.8064995,
+        "source": "injected"
+      }
+    ],
+    "spin-s1": [
+      {
+        "kind": "flipped",
+        "onset_step": 80000,
+        "onset_t": 1792516607.7661903,
+        "source": "behaviour"
+      }
+    ],
+    "stall-s1": [
+      {
+        "kind": "flipped",
+        "onset_step": 120000,
+        "onset_t": 1792517176.9050734,
+        "source": "behaviour"
+      },
+      {
+        "kind": "stall",
+        "onset_step": 250000,
+        "onset_t": 1792517335.6584785,
+        "source": "injected"
+      }
+    ]
+  }
+}

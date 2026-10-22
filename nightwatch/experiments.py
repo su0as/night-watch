@@ -24,6 +24,26 @@ DEFAULT_MATRIX: list[tuple[str, str, int]] = [
     ("crash-s1", "crash@250000", 1),
 ]
 
+# The evaluation set. Every run has its own seed (in the first version 7 runs shared seed 1, so they
+# were identical until their fault fired, and leave-one-run-out let TabPFN see near-twins).
+# Runs meant to be healthy, or to fail only through an injected training fault, use the correct
+# "keep the torso level" shaping, so the only thing wrong with them is the thing we injected.
+# The flip bug is that same shaping term with the sign flipped.
+CLEAN_MATRIX: list[tuple] = [
+    ("healthy-a", "none", 11, "level"),
+    ("healthy-b", "none", 12, "level"),
+    ("healthy-c", "none", 13, "level"),
+    ("healthy-d", "none", 14, "level"),
+    ("flip-a", "flip_bug", 15, "none"),
+    ("flip-b", "flip_bug", 16, "none"),
+    ("spin-a", "spin_bug", 17, "none"),
+    ("lr-a", "lr_blowup@200000", 18, "level"),
+    ("lr-b", "lr_blowup@150000", 19, "level"),
+    ("physics-a", "physics_blowup@200000", 20, "level"),
+    ("stall-a", "stall@250000:hold_s=900", 21, "level"),
+    ("crash-a", "crash@250000", 22, "level"),
+]
+
 SMOKE_MATRIX: list[tuple[str, str, int]] = [
     ("smoke-healthy", "none", 1),
     ("smoke-flip", "flip_bug", 1),
@@ -48,7 +68,7 @@ def threads_per_job(jobs: int, threads: int | None = None) -> int:
     return max(1, physical_cores() // max(1, jobs))
 
 
-def run_matrix(out_dir: str, matrix: list[tuple[str, str, int]], steps: int, jobs: int, env_id: str,
+def run_matrix(out_dir: str, matrix: list[tuple], steps: int, jobs: int, env_id: str,
                preset: str, frame_every: int, only: list[str] | None = None,
                threads: int | None = None) -> list[dict]:
     out = Path(out_dir)
@@ -62,14 +82,16 @@ def run_matrix(out_dir: str, matrix: list[tuple[str, str, int]], steps: int, job
           f"{n_threads} torch thread(s) per run", flush=True)
     while todo or running:
         while todo and len(running) < jobs:
-            name, fault, seed = todo.pop(0)
+            name, fault, seed, *rest = todo.pop(0)
+            shaping = rest[0] if rest else "none"
             log = open(out / f"{name}.log", "w", encoding="utf-8")
             cmd = [sys.executable, "-m", "nightwatch", "train", "--env", env_id, "--steps", str(steps),
                    "--seed", str(seed), "--fault", fault, "--name", name, "--runs-dir", str(out),
-                   "--preset", preset, "--frame-every", str(frame_every), "--threads", str(n_threads)]
+                   "--preset", preset, "--frame-every", str(frame_every), "--threads", str(n_threads),
+                   "--shaping", shaping]
             p = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT)
             running.append((name, p, time.time()))
-            print(f"[runs] started {name} ({fault}, seed {seed})", flush=True)
+            print(f"[runs] started {name} ({fault}, seed {seed}, shaping {shaping})", flush=True)
         time.sleep(5)
         for item in list(running):
             name, p, t0 = item

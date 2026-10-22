@@ -43,11 +43,19 @@ def auroc(labels: list[int], scores: list[float]) -> float | None:
     return round(u / (len(pos) * len(neg)), 3)
 
 
-def loo_tabpfn(runs: list[Path], settings: Settings) -> tuple[dict, dict]:
-    """Leave-one-run-out probabilities for every window of every run."""
+def loo_tabpfn(runs: list[Path], settings: Settings, drop: tuple[str, ...] = (),
+               windows: dict | None = None) -> tuple[dict, dict]:
+    """Leave-one-run-out probabilities for every window of every run. `drop` removes features
+    (the ablation: does TabPFN only know how far into training we are?)."""
     from ..detectors.tabpfn_detector import WindowModel
 
-    windows = {r.name: run_windows(r) for r in runs}
+    keep = [i for i, n in enumerate(FEATURE_NAMES) if n not in drop]
+
+    def vec(w):
+        v = as_vector(w)
+        return [v[i] for i in keep]
+
+    windows = windows or {r.name: run_windows(r) for r in runs}
     lookup: dict[tuple[str, int], float] = {}
     all_y, all_p = [], []
     backend = "?"
@@ -58,17 +66,47 @@ def loo_tabpfn(runs: list[Path], settings: Settings) -> tuple[dict, dict]:
         if not test_rows or not train_rows:
             continue
         model = WindowModel(settings.tabpfn_backend, settings.tabpfn_version).fit(
-            [as_vector(w) for w in train_rows], [w["label"] for w in train_rows])
+            [vec(w) for w in train_rows], [w["label"] for w in train_rows])
         backend = model.backend_name
-        probs = model.predict_proba([as_vector(w) for w in test_rows])
+        probs = model.predict_proba([vec(w) for w in test_rows])
         for w, p in zip(test_rows, probs):
             lookup[(held.name, int(w["step"]))] = p
             all_y.append(int(w["label"]))
             all_p.append(p)
-        print(f"[eval] TabPFN LOO {held.name}: {len(test_rows)} windows, backend={backend}", flush=True)
+        print(f"[eval] TabPFN LOO{' without ' + ','.join(drop) if drop else ''} {held.name}: "
+              f"{len(test_rows)} windows, backend={backend}", flush=True)
     info = {"backend": backend, "windows": len(all_y), "positives": sum(all_y), "auroc": auroc(all_y, all_p),
-            "seconds": round(time.time() - started, 1), "features": len(FEATURE_NAMES)}
+            "seconds": round(time.time() - started, 1), "features": len(keep), "dropped": list(drop)}
     return lookup, info
+
+
+def clock_baseline(runs: list[Path], windows: dict | None = None) -> dict:
+    """How well does 'how far into training are we' alone separate broken from fine windows?
+    If TabPFN is not clearly better than this, it is reading the clock, not the run."""
+    windows = windows or {r.name: run_windows(r) for r in runs}
+    ys = [int(w["label"]) for ws in windows.values() for w in ws]
+    xs = [float(w["step"]) for ws in windows.values() for w in ws]
+    return {"auroc": auroc(ys, xs)}
+
+
+def by_failure_type(scores: list[RunScore], profiles: list[str]) -> list[dict]:
+    """Robot-behaviour failures (reward bugs: flipped / spinning / exploded) and injected training
+    faults (LR, physics, stall, crash) are different jobs; score them separately."""
+    behaviour = {"flipped", "spinning", "exploded"}
+    out = []
+    for p in profiles:
+        ss = [s for s in scores if s.profile == p]
+        beh = [s for s in ss if s.failure_kind in behaviour]
+        tra = [s for s in ss if s.caught is not None and s.failure_kind not in behaviour]
+        clean = [s for s in ss if s.caught is None]
+        mins = lambda xs: (round(median([s.minutes_to_wake for s in xs if s.caught and s.minutes_to_wake is not None]), 1)
+                           if any(s.caught for s in xs) else None)
+        out.append({"profile": p, "behaviour": f"{sum(bool(s.caught) for s in beh)} / {len(beh)}",
+                    "behaviour_min": mins(beh), "training": f"{sum(bool(s.caught) for s in tra)} / {len(tra)}",
+                    "training_min": mins(tra), "clean_runs": len(clean),
+                    "false_on_clean": sum(s.false_wakes for s in clean),
+                    "false_before_failure": sum(s.false_wakes for s in ss if s.caught is not None)})
+    return out
 
 
 class CacheOnlyJudge:
@@ -145,7 +183,8 @@ def _cell(s: RunScore) -> str:
 
 
 def run_evaluation(runs_dir: str, profiles: list[str], out_md: str, settings: Settings,
-                   vision_live: bool = False, every_s: float = 120.0, tail_s: float = 3600.0) -> dict:
+                   vision_live: bool = False, every_s: float = 120.0, tail_s: float = 3600.0,
+                   ablation: bool = True) -> dict:
     runs = list_runs(runs_dir)
     if not runs:
         raise SystemExit(f"no runs found in {runs_dir}")
@@ -159,7 +198,14 @@ def run_evaluation(runs_dir: str, profiles: list[str], out_md: str, settings: Se
 
         for m in {settings.vision_model, settings.text_model}:
             OllamaClient(settings.ollama_url).unload(m)
-    lookup, tab_info = (loo_tabpfn(runs, settings) if need_tabpfn else ({}, {}))
+    lookup, tab_info = ({}, {})
+    if need_tabpfn:
+        win_cache = {r.name: run_windows(r) for r in runs}
+        lookup, tab_info = loo_tabpfn(runs, settings, windows=win_cache)
+        tab_info["clock_baseline"] = clock_baseline(runs, win_cache)
+        if ablation:
+            _, abl = loo_tabpfn(runs, settings, drop=("progress_log10",), windows=win_cache)
+            tab_info["without_progress"] = abl
     judge = None
     if need_vision:
         if vision_live:
@@ -196,6 +242,14 @@ def run_evaluation(runs_dir: str, profiles: list[str], out_md: str, settings: Se
     for s in summary:
         L.append(f"| {s.profile} | {s.caught} / {s.failures} | {s.median_minutes if s.median_minutes is not None else '-'} "
                  f"| {s.false_wakes} | {s.false_per_8h} |")
+    L += ["", "### By kind of failure", "",
+          "| watcher | robot looks wrong (reward bugs) caught | median min | training faults caught | median min "
+          "| false wake-ups on healthy runs | false wake-ups before a failure |",
+          "|---|---|---|---|---|---|---|"]
+    for t in by_failure_type(scores, profiles):
+        L.append(f"| {t['profile']} | {t['behaviour']} | {t['behaviour_min'] if t['behaviour_min'] is not None else '-'} "
+                 f"| {t['training']} | {t['training_min'] if t['training_min'] is not None else '-'} "
+                 f"| {t['false_on_clean']} (on {t['clean_runs']} runs) | {t['false_before_failure']} |")
     L += ["", "## Run by run", "",
           "| run | what went wrong (ground truth) | " + " | ".join(profiles) + " |",
           "|---|---|" + "---|" * len(profiles)]
@@ -209,7 +263,12 @@ def run_evaluation(runs_dir: str, profiles: list[str], out_md: str, settings: Se
               f"- backend: `{tab_info['backend']}`",
               f"- windows scored: {tab_info['windows']} ({tab_info['positives']} after something broke)",
               f"- AUROC: {tab_info['auroc']}",
-              f"- features per window: {tab_info['features']}; total time {tab_info['seconds']} s"]
+              f"- features per window: {tab_info['features']}; total time {tab_info['seconds']} s",
+              f"- for comparison, the training step alone (\"how far into training are we\"): "
+              f"AUROC {tab_info.get('clock_baseline', {}).get('auroc')}"]
+        if tab_info.get("without_progress"):
+            w = tab_info["without_progress"]
+            L.append(f"- TabPFN without the training-progress feature: AUROC {w['auroc']} ({w['features']} features)")
         if str(tab_info.get("backend", "")).startswith("sklearn"):
             L.append("- **Warning: this used the sklearn fallback, not TabPFN. Do not quote these numbers as TabPFN.**")
     if vis:

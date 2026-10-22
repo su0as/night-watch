@@ -64,23 +64,37 @@ class Clock:
 
 
 class RewardBugWrapper(gym.Wrapper):
-    """Adds the buggy shaping term (see faults.py). A no-op for every other fault."""
+    """Reward shaping: the intended "keep the torso level" term, and/or the buggy terms (see faults.py).
 
-    def __init__(self, env: gym.Env, env_id: str, fault: Fault, clock: Clock):
+    shaping="level" is the term written correctly: r -= w * (1 - cos(tilt)). Plain PPO on HalfCheetah
+    often learns to run on its back by itself (3 of 4 unshaped runs did, on this project's laptop), so
+    runs that are meant to be healthy, or to fail only through an injected training fault, use it.
+    The flip bug is the same term with the sign flipped."""
+
+    def __init__(self, env: gym.Env, env_id: str, fault: Fault, clock: Clock, shaping: str = "none",
+                 shaping_weight: float = 1.0):
         super().__init__(env)
         self.env_id = env_id
         self.fault = fault
         self.clock = clock
+        self.shaping = shaping
+        self.shaping_weight = float(shaping_weight)
 
     def step(self, action):
         obs, reward, terminated, truncated, info = self.env.step(action)
-        if self.fault.is_reward_bug and self.clock.step >= self.fault.at_step:
+        bug = self.fault.is_reward_bug and self.clock.step >= self.fault.at_step
+        if bug or self.shaping == "level":
             u = self.env.unwrapped
             pose = pose_from_state(self.env_id, u.data.qpos, u.data.qvel)
             if pose.finite:
-                bonus = reward_bug_bonus(self.fault, pose.tilt_deg, pose.ang_rate)
-                reward = float(reward) + bonus
-                info["shaping_bonus"] = bonus
+                if self.shaping == "level":
+                    pen = self.shaping_weight * (1.0 - math.cos(math.radians(pose.tilt_deg)))
+                    reward = float(reward) - pen
+                    info["shaping_level"] = -pen
+                if bug:
+                    bonus = reward_bug_bonus(self.fault, pose.tilt_deg, pose.ang_rate)
+                    reward = float(reward) + bonus
+                    info["shaping_bonus"] = bonus
         return obs, reward, terminated, truncated, info
 
 
@@ -355,7 +369,10 @@ def train(env_id: str = "HalfCheetah-v5", steps: int = 400_000, seed: int = 1,
           fault_spec: str = "none", name: str | None = None, runs_dir: str = "runs",
           preset: str = "fast", frame_every: int = 25_000, eval_steps: int = 300,
           n_frames: int = 4, width: int = 1024, height: int = 768, device: str = "cpu",
-          save_model: bool = False, threads: int | None = None, head_camera: bool = True) -> Path:
+          save_model: bool = False, threads: int | None = None, head_camera: bool = True,
+          shaping: str = "none", shaping_weight: float = 1.0) -> Path:
+    if shaping not in ("none", "level"):
+        raise ValueError(f"unknown shaping {shaping!r}; choose none or level")
     fault = parse_fault(fault_spec)
     if threads:
         # A PPO MLP is tiny; several runs at once each grabbing every core just fight each other.
@@ -374,7 +391,7 @@ def train(env_id: str = "HalfCheetah-v5", steps: int = 400_000, seed: int = 1,
     manifest = {
         "run_id": run_name, "env_id": env_id, "algo": "PPO", "seed": seed, "preset": preset,
         "total_steps": steps, "frame_every": frame_every, "started_at": time.time(), "threads": threads,
-        "frame_size": [width, height],
+        "frame_size": [width, height], "shaping": shaping, "shaping_weight": shaping_weight,
         "status": "running", "pid": os.getpid(), "host": platform.node(),
         "versions": {"python": sys.version.split()[0], "gymnasium": gym.__version__,
                      "stable_baselines3": stable_baselines3.__version__},
@@ -387,7 +404,7 @@ def train(env_id: str = "HalfCheetah-v5", steps: int = 400_000, seed: int = 1,
 
     def make_train_env():
         env = gym.make(env_id)
-        env = RewardBugWrapper(env, env_id, fault, clock)
+        env = RewardBugWrapper(env, env_id, fault, clock, shaping, shaping_weight)
         env = Monitor(env)
         train_envs.append(env)
         return env
@@ -396,7 +413,7 @@ def train(env_id: str = "HalfCheetah-v5", steps: int = 400_000, seed: int = 1,
     venv.seed(seed)
     eval_env = RewardBugWrapper(gym.make(env_id, render_mode="rgb_array", width=width, height=height,
                                          default_camera_config=camera_config(env_id)),
-                                env_id, fault, clock)
+                                env_id, fault, clock, shaping, shaping_weight)
     matte_floor(eval_env)
 
     model = PPO("MlpPolicy", venv, seed=seed, device=device, verbose=0, **ppo_preset(preset))
