@@ -1,0 +1,281 @@
+{
+  "summary": [
+    {
+      "profile": "tabpfn",
+      "failures": 8,
+      "caught": 6,
+      "median_minutes": 7.5,
+      "false_wakes": 4,
+      "clean_runs": 4,
+      "false_wakes_clean": 1,
+      "hours": 9.52,
+      "false_per_8h": 3.36
+    }
+  ],
+  "scores": [
+    {
+      "run_id": "crash-a",
+      "profile": "tabpfn",
+      "failure_kind": "crash",
+      "caught": true,
+      "minutes_to_wake": 12.0,
+      "steps_to_wake": -144,
+      "first_wake_source": "rules/stalled",
+      "false_wakes": 0,
+      "hours": 0.13296296417713166,
+      "wake_kinds": [
+        "rules/stalled"
+      ]
+    },
+    {
+      "run_id": "flip-a",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 136.0,
+      "steps_to_wake": 148768,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 1,
+      "hours": 2.548762389289008,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "flip-b",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": true,
+      "minutes_to_wake": 2.9,
+      "steps_to_wake": 83360,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 2.5567713097069,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "healthy-a",
+      "profile": "tabpfn",
+      "failure_kind": "none",
+      "caught": null,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.2797497483094533,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "healthy-b",
+      "profile": "tabpfn",
+      "failure_kind": "none",
+      "caught": null,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.2816636715332667,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "healthy-c",
+      "profile": "tabpfn",
+      "failure_kind": "none",
+      "caught": null,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.28109410345554353,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "healthy-d",
+      "profile": "tabpfn",
+      "failure_kind": "none",
+      "caught": null,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 1,
+      "hours": 2.5514942936102547,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "lr-a",
+      "profile": "tabpfn",
+      "failure_kind": "lr_blowup",
+      "caught": true,
+      "minutes_to_wake": 0.1,
+      "steps_to_wake": 4800,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.18900329689184825,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "lr-b",
+      "profile": "tabpfn",
+      "failure_kind": "lr_blowup",
+      "caught": true,
+      "minutes_to_wake": 1.9,
+      "steps_to_wake": 73232,
+      "first_wake_source": "tabpfn/metrics_anomaly",
+      "false_wakes": 0,
+      "hours": 0.187981752620803,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "physics-a",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": false,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 0,
+      "hours": 0.19009047799640233,
+      "wake_kinds": []
+    },
+    {
+      "run_id": "spin-a",
+      "profile": "tabpfn",
+      "failure_kind": "flipped",
+      "caught": false,
+      "minutes_to_wake": null,
+      "steps_to_wake": null,
+      "first_wake_source": null,
+      "false_wakes": 1,
+      "hours": 0.1913734302918116,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly"
+      ]
+    },
+    {
+      "run_id": "stall-a",
+      "profile": "tabpfn",
+      "failure_kind": "stall",
+      "caught": true,
+      "minutes_to_wake": 12.0,
+      "steps_to_wake": -144,
+      "first_wake_source": "rules/stalled",
+      "false_wakes": 1,
+      "hours": 0.13257377286752065,
+      "wake_kinds": [
+        "tabpfn/metrics_anomaly",
+        "rules/stalled"
+      ]
+    }
+  ],
+  "tabpfn": {
+    "backend": "sklearn-fallback",
+    "windows": 2144,
+    "positives": 676,
+    "auroc": 0.888,
+    "seconds": 9.0,
+    "features": 22,
+    "dropped": [],
+    "clock_baseline": {
+      "auroc": 0.793
+    },
+    "without_progress": {
+      "backend": "sklearn-fallback",
+      "windows": 2144,
+      "positives": 676,
+      "auroc": 0.89,
+      "seconds": 4.8,
+      "features": 21,
+      "dropped": [
+        "progress_log10"
+      ]
+    }
+  },
+  "vision": {},
+  "vision_rows": [],
+  "failures": {
+    "crash-a": [
+      {
+        "kind": "crash",
+        "onset_step": 250000,
+        "onset_t": 1792905234.6285431,
+        "source": "injected"
+      }
+    ],
+    "flip-a": [
+      {
+        "kind": "flipped",
+        "onset_step": 140000,
+        "onset_t": 1792676753.5582767,
+        "source": "behaviour"
+      }
+    ],
+    "flip-b": [
+      {
+        "kind": "flipped",
+        "onset_step": 60000,
+        "onset_t": 1792676587.4328651,
+        "source": "behaviour"
+      }
+    ],
+    "healthy-a": [],
+    "healthy-b": [],
+    "healthy-c": [],
+    "healthy-d": [],
+    "lr-a": [
+      {
+        "kind": "lr_blowup",
+        "onset_step": 200000,
+        "onset_t": 1792904436.2868412,
+        "source": "injected"
+      }
+    ],
+    "lr-b": [
+      {
+        "kind": "lr_blowup",
+        "onset_step": 150000,
+        "onset_t": 1792904359.2077844,
+        "source": "injected"
+      }
+    ],
+    "physics-a": [
+      {
+        "kind": "flipped",
+        "onset_step": 180000,
+        "onset_t": 1792686474.9776802,
+        "source": "behaviour"
+      },
+      {
+        "kind": "physics_blowup",
+        "onset_step": 200000,
+        "onset_t": 1792686510.850164,
+        "source": "injected"
+      }
+    ],
+    "spin-a": [
+      {
+        "kind": "flipped",
+        "onset_step": 300000,
+        "onset_t": 1792904596.9585392,
+        "source": "behaviour"
+      }
+    ],
+    "stall-a": [
+      {
+        "kind": "stall",
+        "onset_step": 250000,
+        "onset_t": 1792905228.5085196,
+        "source": "injected"
+      }
+    ]
+  }
+}
