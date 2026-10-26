@@ -2,6 +2,8 @@
 
 [![ci](https://github.com/su0as/night-watch/actions/workflows/ci.yml/badge.svg)](https://github.com/su0as/night-watch/actions/workflows/ci.yml)
 
+**Write-up:** [Gemma couldn't tell my robot was upside down, so I gave it a head camera](https://dev.to/suhassuren/gemma-couldnt-tell-my-robot-was-upside-down-so-i-gave-it-a-head-camera-now-i-sleep-while-it-b0k) (DEV, Hacktoberfest 2026 Week 3) · **Demo video (1:36):** [youtu.be/6MXsOR0J92Q](https://youtu.be/6MXsOR0J92Q)
+
 **Sleep while your robot learns.** Two open models watch an overnight reinforcement-learning run, and you only get woken when it is worth it.
 
 - **TabPFN** reads the training metrics and compares them with past runs that broke.
